@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseAny } from "@/lib/supabase-any";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,8 +34,8 @@ function SiteSettingsAdmin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_settings").select("*").limit(1).maybeSingle().then(({ data }) => {
-      if (data) { setRow(data as Record<string, string>); setId(data.id); }
+    supabaseAny.from("site_settings").select("*").limit(1).maybeSingle().then(({ data }: { data: Record<string, string> | null }) => {
+      if (data) { setRow(data); setId(data.id); }
       else setRow({});
       setLoading(false);
     });
@@ -43,13 +43,13 @@ function SiteSettingsAdmin() {
 
   const save = async () => {
     if (!row) return;
-    const payload = { ...row };
-    delete (payload as Record<string, unknown>).id;
-    delete (payload as Record<string, unknown>).created_at;
-    delete (payload as Record<string, unknown>).updated_at;
+    const payload: Record<string, unknown> = { ...row };
+    delete payload.id;
+    delete payload.created_at;
+    delete payload.updated_at;
     const { error } = id
-      ? await supabase.from("site_settings").update(payload).eq("id", id)
-      : await supabase.from("site_settings").insert(payload);
+      ? await supabaseAny.from("site_settings").update(payload).eq("id", id)
+      : await supabaseAny.from("site_settings").insert(payload);
     if (error) { toast.error(error.message); return; }
     toast.success("Site settings saved");
     qc.invalidateQueries({ queryKey: ["site_settings"] });

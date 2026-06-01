@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { supabaseAny } from "@/lib/supabase-any";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +24,7 @@ function PageContentAdmin() {
 
   useEffect(() => {
     setLoading(true);
-    supabase.from("page_content").select("content").eq("page_key", active).maybeSingle().then(({ data }) => {
+    supabaseAny.from("page_content").select("content").eq("page_key", active).maybeSingle().then(({ data }: { data: { content: unknown } | null }) => {
       setJson(JSON.stringify(data?.content ?? {}, null, 2));
       setLoading(false);
     });
@@ -32,7 +33,7 @@ function PageContentAdmin() {
   const save = async () => {
     let parsed: unknown;
     try { parsed = JSON.parse(json); } catch { toast.error("Invalid JSON"); return; }
-    const { error } = await supabase.from("page_content").upsert({ page_key: active, content: parsed }, { onConflict: "page_key" });
+    const { error } = await supabaseAny.from("page_content").upsert({ page_key: active, content: parsed }, { onConflict: "page_key" });
     if (error) { toast.error(error.message); return; }
     toast.success("Page content saved");
   };

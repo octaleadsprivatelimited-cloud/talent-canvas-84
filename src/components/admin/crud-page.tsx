@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseAny } from "@/lib/supabase-any";
 import { toast } from "sonner";
 
 export type FieldDef = {
@@ -41,7 +41,7 @@ export function CrudPage<T extends Row>({
 
   const reload = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from(table).select("*").order(orderBy, { ascending: asc });
+    const { data, error } = await supabaseAny.from(table).select("*").order(orderBy, { ascending: asc });
     if (error) toast.error(error.message);
     setRows((data as T[]) ?? []);
     setLoading(false);
@@ -71,8 +71,8 @@ export function CrudPage<T extends Row>({
     }
     const isNew = !editing.id;
     const { error } = isNew
-      ? await supabase.from(table).insert(payload)
-      : await supabase.from(table).update(payload).eq("id", editing.id);
+      ? await supabaseAny.from(table).insert(payload)
+      : await supabaseAny.from(table).update(payload).eq("id", editing.id);
     if (error) { toast.error(error.message); return; }
     toast.success(isNew ? "Created" : "Saved");
     setOpen(false);
@@ -82,7 +82,7 @@ export function CrudPage<T extends Row>({
 
   const remove = async (row: T) => {
     if (!confirm("Delete this item?")) return;
-    const { error } = await supabase.from(table).delete().eq("id", row.id);
+    const { error } = await supabaseAny.from(table).delete().eq("id", row.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Deleted");
     reload();
