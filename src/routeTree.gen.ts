@@ -28,6 +28,7 @@ import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as JobsSlugRouteImport } from './routes/jobs.$slug'
 import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
+import { Route as IndustriesSlugRouteImport } from './routes/industries.$slug'
 import { Route as CompaniesSlugRouteImport } from './routes/companies.$slug'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
@@ -139,6 +140,11 @@ const InsightsSlugRoute = InsightsSlugRouteImport.update({
   path: '/insights/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IndustriesSlugRoute = IndustriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => IndustriesRoute,
+} as any)
 const CompaniesSlugRoute = CompaniesSlugRouteImport.update({
   id: '/companies/$slug',
   path: '/companies/$slug',
@@ -220,7 +226,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
-  '/industries': typeof IndustriesRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/companies/$slug': typeof CompaniesSlugRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -255,7 +262,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/industries': typeof IndustriesRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/companies/$slug': typeof CompaniesSlugRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -292,7 +300,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
-  '/industries': typeof IndustriesRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/companies/$slug': typeof CompaniesSlugRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/jobs/$slug': typeof JobsSlugRoute
   '/p/$slug': typeof PSlugRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/case-studies/$slug'
     | '/companies/$slug'
+    | '/industries/$slug'
     | '/insights/$slug'
     | '/jobs/$slug'
     | '/p/$slug'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/case-studies/$slug'
     | '/companies/$slug'
+    | '/industries/$slug'
     | '/insights/$slug'
     | '/jobs/$slug'
     | '/p/$slug'
@@ -421,6 +432,7 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/case-studies/$slug'
     | '/companies/$slug'
+    | '/industries/$slug'
     | '/insights/$slug'
     | '/jobs/$slug'
     | '/p/$slug'
@@ -438,7 +450,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
-  IndustriesRoute: typeof IndustriesRoute
+  IndustriesRoute: typeof IndustriesRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   TeamRoute: typeof TeamRoute
@@ -591,6 +603,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/industries/$slug': {
+      id: '/industries/$slug'
+      path: '/$slug'
+      fullPath: '/industries/$slug'
+      preLoaderRoute: typeof IndustriesSlugRouteImport
+      parentRoute: typeof IndustriesRoute
+    }
     '/companies/$slug': {
       id: '/companies/$slug'
       path: '/companies/$slug'
@@ -735,12 +754,24 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface IndustriesRouteChildren {
+  IndustriesSlugRoute: typeof IndustriesSlugRoute
+}
+
+const IndustriesRouteChildren: IndustriesRouteChildren = {
+  IndustriesSlugRoute: IndustriesSlugRoute,
+}
+
+const IndustriesRouteWithChildren = IndustriesRoute._addFileChildren(
+  IndustriesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
-  IndustriesRoute: IndustriesRoute,
+  IndustriesRoute: IndustriesRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   TeamRoute: TeamRoute,

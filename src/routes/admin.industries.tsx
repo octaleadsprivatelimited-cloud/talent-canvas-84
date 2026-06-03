@@ -13,6 +13,7 @@ export const Route = createFileRoute("/admin/industries")({
         { key: "slug", label: "Slug", required: true },
         { key: "icon", label: "Icon (lucide name)", placeholder: "Cpu" },
         { key: "description", label: "Description", type: "textarea", rows: 3 },
+        { key: "detail_content", label: "Detail Layout Config (JSON)", type: "json", rows: 10 },
         { key: "sort_order", label: "Sort order", type: "number" },
         { key: "published", label: "Published", type: "boolean" },
       ]}

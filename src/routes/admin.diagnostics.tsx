@@ -267,6 +267,23 @@ function DiagnosticsPage() {
           icon: "cpu",
           published: true,
           sort_order: 1,
+          detail_content: {
+            hero_title: "Powering the Next Wave of Technology Talent",
+            hero_subtitle:
+              "From early-stage venture-backed AI firms to enterprise SaaS leaders, we source the software architects and engineering leaders shaping the digital frontier.",
+            capabilities: [
+              "Software Engineering & Architecture",
+              "Artificial Intelligence & Machine Learning",
+              "Cloud Infrastructure & Devops",
+              "Product Management & UX Design",
+              "Cybersecurity & Threat Intel",
+            ],
+            sourcing_stats: [
+              { value: "15 Days", label: "Avg. Tech Time-to-Submit" },
+              { value: "450+", label: "Engineers Placed" },
+              { value: "94%", label: "Retention Rate at 12 Months" },
+            ],
+          },
         },
         {
           id: "ind-2",
@@ -276,6 +293,77 @@ function DiagnosticsPage() {
           icon: "heart",
           published: true,
           sort_order: 2,
+          detail_content: {
+            hero_title: "Vetting Specialists for Critical Care & Medical Innovation",
+            hero_subtitle:
+              "Sourcing clinical research coordinators, regulatory compliance experts, and biomedical engineers for FDA-approved diagnostic and therapeutic platforms.",
+            capabilities: [
+              "Biomedical & Hardware Engineering",
+              "Clinical Trials Operations",
+              "FDA Regulatory Affairs & Compliance",
+              "Biostatistics & Bioinformatics",
+              "Healthcare IT & Patient Portals",
+            ],
+            sourcing_stats: [
+              { value: "22 Days", label: "Avg. Clinical Time-to-Submit" },
+              { value: "120+", label: "Medical Devices Placed" },
+              { value: "98%", label: "Compliance Audit Pass Rate" },
+            ],
+          },
+        },
+        {
+          id: "ind-3",
+          label: "Financial Services & FinTech",
+          slug: "financial-services",
+          description:
+            "Quantitative trading, asset management, risk compliance, banking operations, and financial engineering.",
+          icon: "wallet",
+          published: true,
+          sort_order: 3,
+          detail_content: {
+            hero_title: "Sourcing Leadership in Quantitative Finance & Risk",
+            hero_subtitle:
+              "Placing expert financial analysts, risk modeling specialists, and blockchain developers with leading asset management firms and modern FinTech innovators.",
+            capabilities: [
+              "Quantitative Trading & Analytics",
+              "Risk Management & Compliance",
+              "Blockchain & Distributed Ledger Technology",
+              "Investment Banking & Corporate Finance",
+              "Information Security & Auditing",
+            ],
+            sourcing_stats: [
+              { value: "18 Days", label: "Avg. Finance Time-to-Submit" },
+              { value: "$10B+", label: "AUM Administered by Placed Talent" },
+              { value: "91%", label: "Placement Longevity at 2 Years" },
+            ],
+          },
+        },
+        {
+          id: "ind-4",
+          label: "Logistics & Supply Chain",
+          slug: "logistics-supply-chain",
+          description:
+            "Global supply chains, logistics operations, warehouse management systems, and procurement.",
+          icon: "truck",
+          published: true,
+          sort_order: 4,
+          detail_content: {
+            hero_title: "Strengthening Supply Chains with Modern Leadership",
+            hero_subtitle:
+              "Delivering logistics directors, fleet operations managers, and warehouse systems experts to build highly resilient distribution pipelines.",
+            capabilities: [
+              "Fleet Operations & Routing",
+              "Warehouse Management Systems (WMS)",
+              "Global Procurement & Sourcing",
+              "Inventory Optimization & Analytics",
+              "Distribution Center Administration",
+            ],
+            sourcing_stats: [
+              { value: "19 Days", label: "Avg. Logistics Time-to-Submit" },
+              { value: "24/7", label: "Operations Support" },
+              { value: "95%", label: "SLA Sourcing Compliance" },
+            ],
+          },
         },
       ];
 
