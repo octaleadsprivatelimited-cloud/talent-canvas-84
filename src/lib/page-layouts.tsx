@@ -48,10 +48,13 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "cta_href", label: "CTA link", type: "url", placeholder: "/contact" },
       {
         key: "features",
-        label: "Features (JSON array)",
-        type: "json",
-        rows: 8,
-        help: '[{"title":"Speed","body":"Ship faster."}, …]',
+        label: "Features",
+        type: "repeater",
+        itemLabel: "Feature",
+        itemFields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "body", label: "Body", type: "textarea", rows: 2 },
+        ],
       },
     ],
     sample: {
