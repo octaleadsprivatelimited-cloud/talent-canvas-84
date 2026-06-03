@@ -510,6 +510,6 @@ function Index() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
