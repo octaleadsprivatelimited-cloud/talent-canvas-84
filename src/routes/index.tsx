@@ -170,11 +170,88 @@ const clients = [
   "WORKFORCE SOLUTIONS",
 ];
 
+const sectionIds = ["hero", "services", "industries", "process", "testimonials", "cta"] as const;
+const sectionLabels: Record<(typeof sectionIds)[number], string> = {
+  hero: "Intro",
+  services: "Services",
+  industries: "Industries",
+  process: "Process",
+  testimonials: "Stories",
+  cta: "Contact",
+};
+
 function Index() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState<string>("hero");
+
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) setActive(visible.target.id);
+      },
+      { root, threshold: [0.4, 0.6, 0.8] },
+    );
+    sectionIds.forEach((id) => {
+      const el = root.querySelector(`#${id}`);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (id: string) => {
+    const root = scrollerRef.current;
+    const el = root?.querySelector<HTMLElement>(`#${id}`);
+    if (!root || !el) return;
+    root.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+  };
+
   return (
-    <div className="h-screen snap-y snap-mandatory overflow-y-scroll scroll-smooth">
+    <div
+      ref={scrollerRef}
+      className="relative h-screen snap-y snap-mandatory overflow-y-scroll scroll-smooth [scroll-behavior:smooth]"
+    >
+      {/* Side dot nav */}
+      <nav
+        aria-label="Section navigation"
+        className="fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-4 md:flex"
+      >
+        {sectionIds.map((id) => {
+          const isActive = active === id;
+          return (
+            <button
+              key={id}
+              onClick={() => scrollTo(id)}
+              aria-label={`Scroll to ${sectionLabels[id]}`}
+              aria-current={isActive ? "true" : undefined}
+              className="group relative flex items-center"
+            >
+              <span
+                className={`absolute right-6 whitespace-nowrap rounded-sm bg-foreground px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-background opacity-0 transition group-hover:opacity-100 ${
+                  isActive ? "opacity-100" : ""
+                }`}
+              >
+                {sectionLabels[id]}
+              </span>
+              <span
+                className={`block transition-all duration-300 ${
+                  isActive
+                    ? "h-6 w-[3px] bg-accent"
+                    : "h-2.5 w-2.5 rounded-full border border-foreground/40 bg-transparent hover:bg-foreground/40"
+                }`}
+              />
+            </button>
+          );
+        })}
+      </nav>
+
       {/* ============== HERO ============== */}
-      <section className="relative snap-start overflow-hidden bg-gradient-hero">
+      <section id="hero" className="relative snap-start overflow-hidden bg-gradient-hero">
+
         {/* sharp accent grid */}
         <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:64px_64px]" />
         <div className="absolute -right-32 -top-32 h-96 w-96 bg-accent/20 blur-3xl" />
