@@ -37,6 +37,7 @@ import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminPageContentRouteImport } from './routes/admin.page-content'
 import { Route as AdminInsightsRouteImport } from './routes/admin.insights'
 import { Route as AdminIndustriesRouteImport } from './routes/admin.industries'
+import { Route as AdminDiagnosticsRouteImport } from './routes/admin.diagnostics'
 import { Route as AdminCaseStudiesRouteImport } from './routes/admin.case-studies'
 
 const TermsRoute = TermsRouteImport.update({
@@ -179,6 +180,11 @@ const AdminIndustriesRoute = AdminIndustriesRouteImport.update({
   path: '/industries',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDiagnosticsRoute = AdminDiagnosticsRouteImport.update({
+  id: '/diagnostics',
+  path: '/diagnostics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCaseStudiesRoute = AdminCaseStudiesRouteImport.update({
   id: '/case-studies',
   path: '/case-studies',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof TeamRoute
   '/terms': typeof TermsRoute
   '/admin/case-studies': typeof AdminCaseStudiesRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/industries': typeof AdminIndustriesRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/page-content': typeof AdminPageContentRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/team': typeof TeamRoute
   '/terms': typeof TermsRoute
   '/admin/case-studies': typeof AdminCaseStudiesRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/industries': typeof AdminIndustriesRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/page-content': typeof AdminPageContentRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/team': typeof TeamRoute
   '/terms': typeof TermsRoute
   '/admin/case-studies': typeof AdminCaseStudiesRoute
+  '/admin/diagnostics': typeof AdminDiagnosticsRoute
   '/admin/industries': typeof AdminIndustriesRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/page-content': typeof AdminPageContentRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/terms'
     | '/admin/case-studies'
+    | '/admin/diagnostics'
     | '/admin/industries'
     | '/admin/insights'
     | '/admin/page-content'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/terms'
     | '/admin/case-studies'
+    | '/admin/diagnostics'
     | '/admin/industries'
     | '/admin/insights'
     | '/admin/page-content'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/terms'
     | '/admin/case-studies'
+    | '/admin/diagnostics'
     | '/admin/industries'
     | '/admin/insights'
     | '/admin/page-content'
@@ -593,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndustriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/diagnostics': {
+      id: '/admin/diagnostics'
+      path: '/diagnostics'
+      fullPath: '/admin/diagnostics'
+      preLoaderRoute: typeof AdminDiagnosticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/case-studies': {
       id: '/admin/case-studies'
       path: '/case-studies'
@@ -605,6 +624,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCaseStudiesRoute: typeof AdminCaseStudiesRoute
+  AdminDiagnosticsRoute: typeof AdminDiagnosticsRoute
   AdminIndustriesRoute: typeof AdminIndustriesRoute
   AdminInsightsRoute: typeof AdminInsightsRoute
   AdminPageContentRoute: typeof AdminPageContentRoute
@@ -618,6 +638,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCaseStudiesRoute: AdminCaseStudiesRoute,
+  AdminDiagnosticsRoute: AdminDiagnosticsRoute,
   AdminIndustriesRoute: AdminIndustriesRoute,
   AdminInsightsRoute: AdminInsightsRoute,
   AdminPageContentRoute: AdminPageContentRoute,
@@ -655,3 +676,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
