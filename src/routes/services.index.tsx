@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
-import * as Icons from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageHero } from "@/components/page-hero";
 import { Button } from "@/components/ui/button";
 import { getServiceImage } from "@/lib/service-images";
-
 
 type Service = {
   id: string;
@@ -29,8 +26,7 @@ const servicesQuery = queryOptions({
   },
 });
 
-const PAGE_TITLE =
-  "Recruitment & Workforce Services — Virelix Consulting";
+const PAGE_TITLE = "Recruitment & Workforce Services — Virelix Consulting";
 const PAGE_DESCRIPTION =
   "Executive search, IT and non-IT recruitment, RPO, workforce planning, business consulting, and professional training delivered across the USA and India by Virelix Consulting.";
 
@@ -55,7 +51,13 @@ export const Route = createFileRoute("/services/")({
             "recruitment agency, executive search, IT recruitment, RPO, staffing solutions, workforce planning, talent acquisition, USA India recruitment, Virelix Consulting",
         },
       ],
-      links: [{ rel: "canonical", href: "/services" }],
+      links: [
+        { rel: "canonical", href: "/services" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap",
+        },
+      ],
       scripts: [
         {
           type: "application/ld+json",
@@ -77,79 +79,156 @@ export const Route = createFileRoute("/services/")({
   component: ServicesPage,
 });
 
-function getIcon(name?: string | null) {
-  const Lucide = Icons as unknown as Record<
-    string,
-    React.ComponentType<{ className?: string; strokeWidth?: number }>
-  >;
-  return (name && Lucide[name]) || Icons.Sparkles;
-}
+// Vary parallax image position per row for editorial rhythm
+const IMAGE_VARIANTS = [
+  { right: "right-[8%]", top: "-top-10", w: "w-60", h: "h-72" },
+  { right: "right-[22%]", top: "top-1/2 -translate-y-1/2", w: "w-80", h: "h-56" },
+  { right: "right-[5%]", top: "-bottom-16", w: "w-64", h: "h-64" },
+];
+
+const BG_VARIANTS = [
+  "bg-[#f4f2ef]",
+  "bg-[#eceae6]",
+  "bg-[#f0ede8]",
+];
 
 function ServicesPage() {
   const { data } = useSuspenseQuery(servicesQuery);
 
   return (
-    <>
-      <PageHero
-        eyebrow="What we do"
-        title="Strategic talent acquisition & workforce solutions, end to end."
-        subtitle="From a single executive hire to building entire teams — Virelix combines USA-headquartered consulting with global delivery across ten service practices."
-      />
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid gap-px bg-border md:grid-cols-2">
-          {data.map((s) => {
-            const Icon = getIcon(s.icon);
+    <section className="min-h-screen w-full bg-[#fcfbf9] py-20 px-6 md:px-12 md:py-32">
+      <div className="mx-auto w-full max-w-6xl">
+        {/* Editorial Header */}
+        <div className="mb-20 flex flex-col gap-10 md:mb-32 md:flex-row md:items-end md:justify-between md:gap-12">
+          <div className="max-w-2xl">
+            <div className="mb-6 flex items-center gap-4 md:mb-8">
+              <span className="h-px w-8 bg-slate-900" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
+                Capabilities
+              </span>
+            </div>
+            <h1 className="text-5xl font-light leading-[0.9] tracking-tighter text-slate-900 md:text-7xl lg:text-8xl">
+              Our{" "}
+              <span
+                className="italic"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Service
+              </span>{" "}
+              Practices
+            </h1>
+          </div>
+          <p className="max-w-xs border-l border-slate-200 pl-6 text-base leading-relaxed text-slate-500 md:pl-8 md:text-lg">
+            Strategic talent solutions engineered for high-growth enterprises and global leadership teams.
+          </p>
+        </div>
+
+        {/* Editorial List */}
+        <div className="border-t border-slate-200">
+          {data.map((s, i) => {
             const img = getServiceImage(s.slug);
+            const num = String(i + 1).padStart(2, "0");
+            const variant = IMAGE_VARIANTS[i % IMAGE_VARIANTS.length];
+            const bg = BG_VARIANTS[i % BG_VARIANTS.length];
+            const fromLeft = i % 2 === 1;
+
             return (
               <Link
                 key={s.id}
                 to="/services/$slug"
                 params={{ slug: s.slug }}
-                className="group flex flex-col bg-background transition-colors hover:bg-surface sm:flex-row"
+                className="group relative block overflow-hidden border-b border-slate-200 py-12 transition-all duration-700 md:py-20"
               >
-                <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-muted sm:aspect-square sm:w-44 md:w-52">
-                  <img
-                    src={img.src}
-                    srcSet={img.srcSet}
-                    sizes="(min-width: 768px) 208px, 100vw"
-                    alt={s.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center border border-background/40 bg-background/90 backdrop-blur">
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
+                {/* Sliding background layers */}
+                <div
+                  className={`absolute inset-0 ${bg} transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    fromLeft
+                      ? "-translate-x-full group-hover:translate-x-0"
+                      : "translate-x-full group-hover:translate-x-0"
+                  }`}
+                />
+                <div
+                  className={`absolute inset-0 bg-white transition-transform duration-1000 delay-75 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                    fromLeft
+                      ? "-translate-x-full group-hover:translate-x-0"
+                      : "translate-x-full group-hover:translate-x-0"
+                  }`}
+                />
+
+                {/* Row content */}
+                <div className="relative z-20 flex flex-col items-baseline gap-6 md:flex-row md:gap-16 lg:gap-24">
+                  <span className="text-xs font-semibold tabular-nums tracking-widest text-slate-400 transition-colors duration-500 group-hover:text-slate-900">
+                    {num}
+                  </span>
+                  <div className="flex-1">
+                    <h2
+                      className="text-3xl font-medium tracking-tight text-slate-900 transition-transform duration-500 ease-out group-hover:translate-x-4 md:text-5xl lg:text-6xl"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      {s.title}
+                    </h2>
+                    <div className="max-h-0 overflow-hidden opacity-0 transition-all duration-700 ease-in-out group-hover:max-h-48 group-hover:opacity-100">
+                      <p className="mt-6 max-w-md text-base leading-relaxed text-slate-500 transition-transform duration-700 delay-100 group-hover:translate-x-8 md:mt-8 md:text-lg">
+                        {s.summary}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="hidden md:block">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 transition-all duration-500 group-hover:border-slate-900 group-hover:bg-slate-900 group-hover:text-white">
+                      <ArrowRight className="h-5 w-5 transition-transform duration-500 group-hover:-rotate-45" />
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <h2 className="font-display text-lg font-bold sm:text-xl">{s.title}</h2>
-                    <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+
+                {/* Parallax image — desktop only */}
+                <div
+                  className={`pointer-events-none absolute z-30 hidden opacity-0 transition-all duration-1000 group-hover:opacity-100 lg:block ${variant.right} ${variant.top} ${variant.w} ${variant.h}`}
+                >
+                  <div className="absolute -inset-4 -z-10 translate-x-4 translate-y-24 border border-slate-200/60 transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-12 group-hover:translate-y-8" />
+                  <div className="relative h-full w-full translate-y-32 overflow-hidden shadow-2xl transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-x-4 group-hover:translate-y-4">
+                    <img
+                      src={img.src}
+                      srcSet={img.srcSet}
+                      sizes="400px"
+                      alt={s.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full scale-110 object-cover grayscale transition-all duration-1000 group-hover:scale-100 group-hover:grayscale-0"
+                    />
                   </div>
-                  <p className="text-sm text-muted-foreground">{s.summary}</p>
-                  {s.features && s.features.length > 0 && (
-                    <ul className="mt-1 space-y-1.5">
-                      {s.features.slice(0, 3).map((f, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs">
-                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" /> {f}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <span className="absolute -bottom-8 right-0 translate-y-12 text-[9px] uppercase italic tracking-[0.2em] text-slate-400 transition-transform duration-500 ease-out group-hover:-translate-y-4">
+                    Practice {num}
+                  </span>
                 </div>
               </Link>
             );
           })}
         </div>
 
-        <div className="mt-12 flex justify-center">
-          <Button size="lg" asChild>
+        {/* Footer */}
+        <div className="mt-20 flex flex-col items-start justify-between gap-8 md:mt-32 md:flex-row md:items-center">
+          <div className="flex items-center gap-6">
+            <div className="flex gap-1.5">
+              <div className="h-1 w-1 rounded-full bg-slate-900" />
+              <div className="h-1 w-1 rounded-full bg-slate-300" />
+              <div className="h-1 w-1 rounded-full bg-slate-200" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              Ten practices · USA & India
+            </span>
+          </div>
+          <Button
+            asChild
+            size="lg"
+            className="rounded-none bg-slate-900 px-8 text-[11px] font-bold uppercase tracking-[0.3em] hover:bg-slate-800"
+          >
             <Link to="/contact">
-              Talk to a Virelix consultant <ArrowRight className="ml-2 h-4 w-4" />
+              Talk to a Virelix consultant
+              <ArrowRight className="ml-3 h-4 w-4" />
             </Link>
           </Button>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
