@@ -34,13 +34,28 @@ function SiteSettingsAdmin() {
   const [row, setRow] = useState<Record<string, string> | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [savedTheme, setSavedTheme] = useState<ThemeKey>("editorial");
+  const [previewTheme, setPreviewTheme] = useState<ThemeKey>("editorial");
 
   useEffect(() => {
     supabaseAny.from("site_settings").select("*").limit(1).maybeSingle().then(({ data }: { data: Record<string, string> | null }) => {
       if (data) { setRow(data); setId(data.id); }
       else setRow({ home_theme: "editorial" });
+      const t = ((data?.home_theme as ThemeKey) || "editorial");
+      setSavedTheme(t);
+      setPreviewTheme(t);
       setLoading(false);
     });
+  }, []);
+
+  // Apply live preview; restore saved theme when leaving the page
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("lovable:preview-theme", { detail: { theme: previewTheme } }));
+  }, [previewTheme]);
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent("lovable:preview-theme", { detail: { theme: null } }));
+    };
   }, []);
 
   const persist = async (next: Record<string, string>) => {
@@ -62,16 +77,26 @@ function SiteSettingsAdmin() {
     if (await persist(row)) toast.success("Site settings saved");
   };
 
-  const pickTheme = async (key: ThemeKey) => {
-    if (!row) return;
-    const next = { ...row, home_theme: key };
-    setRow(next);
-    if (await persist(next)) toast.success(`Theme set to ${THEMES.find((t) => t.key === key)?.name}`);
+  const previewPick = (key: ThemeKey) => {
+    setPreviewTheme(key);
   };
+
+  const applyTheme = async () => {
+    if (!row) return;
+    const next = { ...row, home_theme: previewTheme };
+    setRow(next);
+    if (await persist(next)) {
+      setSavedTheme(previewTheme);
+      toast.success(`Theme set to ${THEMES.find((t) => t.key === previewTheme)?.name}`);
+    }
+  };
+
+  const discardPreview = () => setPreviewTheme(savedTheme);
 
   if (loading || !row) return <div className="text-muted-foreground">Loading…</div>;
 
-  const activeTheme = (row.home_theme as ThemeKey) || "editorial";
+  const activeTheme = previewTheme;
+  const isDirty = previewTheme !== savedTheme;
 
   return (
     <div className="max-w-4xl">
