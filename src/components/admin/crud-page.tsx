@@ -447,12 +447,47 @@ export function CrudPage<T extends Row>({
                       onChange={(e) => setVal(e.target.value)}
                     />
                   ) : (
-                    <Input
-                      type={f.type === "number" ? "number" : f.type === "url" ? "url" : "text"}
-                      placeholder={f.placeholder}
-                      value={(val as string | number | undefined) ?? ""}
-                      onChange={(e) => setVal(e.target.value)}
-                    />
+                    <div className="space-y-2">
+                      <Input
+                        type={f.type === "number" ? "number" : f.type === "url" ? "url" : "text"}
+                        placeholder={f.placeholder}
+                        value={(val as string | number | undefined) ?? ""}
+                        onChange={(e) => setVal(e.target.value)}
+                      />
+                      {(f.key.toLowerCase().includes("url") ||
+                        f.key.toLowerCase().includes("photo") ||
+                        f.key.toLowerCase().includes("cover") ||
+                        f.key.toLowerCase().includes("image")) && (
+                        <div className="flex items-center gap-3">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="max-w-[240px] text-xs cursor-pointer"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const toastId = toast.loading("Uploading image...");
+                              try {
+                                const { uploadImage } =
+                                  await import("@/integrations/firebase/client");
+                                const url = await uploadImage(file);
+                                setVal(url);
+                                toast.success("Image uploaded successfully!", { id: toastId });
+                              } catch (err: any) {
+                                toast.error(`Upload failed: ${err.message}`, { id: toastId });
+                              }
+                            }}
+                          />
+                          {val && typeof val === "string" && (
+                            <img
+                              src={val}
+                              alt="Preview"
+                              className="h-10 w-10 object-cover border border-border rounded"
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               );

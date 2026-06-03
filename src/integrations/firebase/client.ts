@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  type FirebaseStorage,
+} from "firebase/storage";
+import {
   getFirestore,
   collection,
   query,
@@ -44,11 +51,13 @@ const isConfigValid = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
 let app;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
+let storage: FirebaseStorage | null = null;
 
 if (isConfigValid) {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   db = getFirestore(app);
   auth = getAuth(app);
+  storage = getStorage(app);
 } else {
   console.warn(
     "[Firebase] Missing Firebase environment variables. Please check your .env file and add VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID.",
@@ -551,6 +560,31 @@ class FirebaseAuthWrapper {
   }
 }
 
+export async function uploadImage(file: File, folder: string = "uploads"): Promise<string> {
+  if (!storage) {
+    // Fall back to base64 immediately if storage isn't initialized
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
+  }
+  try {
+    const fileRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+    const snapshot = await uploadBytes(fileRef, file);
+    return await getDownloadURL(snapshot.ref);
+  } catch (err) {
+    console.warn("Firebase Storage upload failed, falling back to base64:", err);
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
 // ----------------------------------------------------
 // CLIENT EXPORT INTERFACE
 // ----------------------------------------------------
@@ -559,6 +593,9 @@ export const firebaseClient = {
   auth: new FirebaseAuthWrapper(),
   from: (collectionName: string) => {
     return new FirebaseQueryBuilder(collectionName);
+  },
+  storage: {
+    uploadImage,
   },
 };
 
