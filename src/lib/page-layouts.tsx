@@ -5,13 +5,24 @@ export type LayoutId = "hero-features" | "split-content" | "longform" | "landing
 
 export type LayoutContent = Record<string, unknown>;
 
+export type RepeaterSubField = {
+  key: string;
+  label: string;
+  type: "text" | "textarea" | "url";
+  rows?: number;
+  placeholder?: string;
+};
+
 export type LayoutFieldDef = {
   key: string;
   label: string;
-  type: "text" | "textarea" | "url" | "array" | "json";
+  type: "text" | "textarea" | "url" | "repeater";
   rows?: number;
   placeholder?: string;
   help?: string;
+  // for type === "repeater"
+  itemLabel?: string;
+  itemFields?: RepeaterSubField[];
 };
 
 export type LayoutMeta = {
@@ -37,10 +48,13 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "cta_href", label: "CTA link", type: "url", placeholder: "/contact" },
       {
         key: "features",
-        label: "Features (JSON array)",
-        type: "json",
-        rows: 8,
-        help: '[{"title":"Speed","body":"Ship faster."}, …]',
+        label: "Features",
+        type: "repeater",
+        itemLabel: "Feature",
+        itemFields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "body", label: "Body", type: "textarea", rows: 2 },
+        ],
       },
     ],
     sample: {
@@ -66,10 +80,14 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "subhead", label: "Subhead", type: "textarea", rows: 2 },
       {
         key: "sections",
-        label: "Sections (JSON array)",
-        type: "json",
-        rows: 12,
-        help: '[{"title":"Step 1","body":"…","image_url":"https://…"}, …]',
+        label: "Sections",
+        type: "repeater",
+        itemLabel: "Section",
+        itemFields: [
+          { key: "title", label: "Title", type: "text" },
+          { key: "body", label: "Body", type: "textarea", rows: 3 },
+          { key: "image_url", label: "Image URL", type: "url" },
+        ],
       },
     ],
     sample: {
@@ -110,10 +128,13 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "subhead", label: "Subhead", type: "textarea", rows: 2 },
       {
         key: "stats",
-        label: "Stats (JSON array)",
-        type: "json",
-        rows: 6,
-        help: '[{"value":"120+","label":"Clients"}, …]',
+        label: "Stats",
+        type: "repeater",
+        itemLabel: "Stat",
+        itemFields: [
+          { key: "value", label: "Value", type: "text", placeholder: "120+" },
+          { key: "label", label: "Label", type: "text", placeholder: "Clients" },
+        ],
       },
       { key: "cta_headline", label: "CTA headline", type: "text" },
       { key: "cta_body", label: "CTA body", type: "textarea", rows: 2 },
@@ -144,10 +165,13 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "subhead", label: "Subhead", type: "textarea", rows: 2 },
       {
         key: "items",
-        label: "Gallery items (JSON array)",
-        type: "json",
-        rows: 12,
-        help: '[{"image_url":"https://…","caption":"…"}, …]',
+        label: "Gallery items",
+        type: "repeater",
+        itemLabel: "Item",
+        itemFields: [
+          { key: "image_url", label: "Image URL", type: "url" },
+          { key: "caption", label: "Caption", type: "text" },
+        ],
       },
     ],
     sample: {
