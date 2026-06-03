@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, redirect, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Loader2, LayoutDashboard, Settings, Sparkles, Building2, Users, BookOpen, MessageSquare, Inbox, FileText, Quote } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
@@ -24,12 +24,13 @@ const sections: { to: string; label: string; icon: typeof LayoutDashboard; exact
 function AdminLayout() {
   const { isAdmin, loading, user } = useIsAdmin();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && !user) {
-      throw redirect({ to: "/login", search: { redirect: location.href } });
+      navigate({ to: "/login", search: { redirect: location.href } });
     }
-  }, [loading, user, location.href]);
+  }, [loading, user, location.href, navigate]);
 
   if (loading) {
     return <div className="flex h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
