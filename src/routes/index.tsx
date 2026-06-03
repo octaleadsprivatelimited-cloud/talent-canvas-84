@@ -23,6 +23,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HomeHero, type ThemeKey } from "@/components/home-themes";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import heroTeam from "@/assets/hero-team.jpg";
 import heroPortrait from "@/assets/hero-portrait.jpg";
 import heroHandshake from "@/assets/hero-handshake.jpg";
