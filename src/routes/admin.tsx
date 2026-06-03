@@ -1,7 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LayoutDashboard, Settings, Sparkles, Building2, Users, BookOpen, MessageSquare, Inbox, FileText, Quote, Activity } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 export const Route = createFileRoute("/admin")({
