@@ -5,6 +5,8 @@ import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/page-hero";
 import { Button } from "@/components/ui/button";
+import { getServiceImage } from "@/lib/service-images";
+
 
 type Service = {
   id: string;
@@ -129,6 +131,8 @@ function ServiceDetail() {
   >;
   const Icon = (data.icon && Lucide[data.icon]) || Icons.Sparkles;
 
+  const img = getServiceImage(data.slug);
+
   return (
     <>
       <PageHero
@@ -136,6 +140,18 @@ function ServiceDetail() {
         title={data.title}
         subtitle={data.summary ?? undefined}
       />
+      <div className="container mx-auto px-4 pt-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden border border-border bg-muted sm:aspect-[16/7] md:aspect-[21/8]">
+          <img
+            src={img.src}
+            srcSet={img.srcSet}
+            sizes="(min-width: 1024px) 1100px, 100vw"
+            alt={data.title}
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </div>
       <section className="container mx-auto grid gap-12 px-4 py-16 lg:grid-cols-[2fr_1fr]">
         <div>
           <div className="mb-6 flex h-14 w-14 items-center justify-center border border-border">
@@ -144,6 +160,7 @@ function ServiceDetail() {
           <div className="prose prose-lg max-w-none whitespace-pre-line text-foreground/90">
             {data.body}
           </div>
+
           {data.features && data.features.length > 0 && (
             <div className="mt-10">
               <h2 className="mb-4 font-display text-xl font-semibold">

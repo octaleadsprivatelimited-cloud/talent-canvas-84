@@ -5,6 +5,8 @@ import * as Icons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/page-hero";
 import { Button } from "@/components/ui/button";
+import { getServiceImage } from "@/lib/service-images";
+
 
 type Service = {
   id: string;
@@ -97,34 +99,49 @@ function ServicesPage() {
         <div className="grid gap-px bg-border md:grid-cols-2">
           {data.map((s) => {
             const Icon = getIcon(s.icon);
+            const img = getServiceImage(s.slug);
             return (
               <Link
                 key={s.id}
                 to="/services/$slug"
                 params={{ slug: s.slug }}
-                className="group flex flex-col gap-4 bg-background p-8 transition-colors hover:bg-surface"
+                className="group flex flex-col bg-background transition-colors hover:bg-surface"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center border border-border">
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+                  <img
+                    src={img.src}
+                    srcSet={img.srcSet}
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    alt={s.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center border border-background/40 bg-background/90 backdrop-blur">
                     <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
-                  <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                 </div>
-                <h2 className="font-display text-2xl font-bold">{s.title}</h2>
-                <p className="text-muted-foreground">{s.summary}</p>
-                {s.features && s.features.length > 0 && (
-                  <ul className="mt-2 space-y-2">
-                    {s.features.slice(0, 4).map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <Check className="mt-0.5 h-4 w-4 text-primary" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
+                  <div className="flex items-start justify-between gap-3">
+                    <h2 className="font-display text-xl font-bold sm:text-2xl">{s.title}</h2>
+                    <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                  </div>
+                  <p className="text-muted-foreground">{s.summary}</p>
+                  {s.features && s.features.length > 0 && (
+                    <ul className="mt-2 space-y-2">
+                      {s.features.slice(0, 4).map((f, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </Link>
             );
           })}
         </div>
+
         <div className="mt-12 flex justify-center">
           <Button size="lg" asChild>
             <Link to="/contact">
