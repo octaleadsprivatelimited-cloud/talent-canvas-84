@@ -171,7 +171,15 @@ const clients = [
 ];
 
 function Index() {
-  return (
+  const [slide, setSlide] = useState(0);
+  const total = heroSlides.length;
+  const go = (i: number) => setSlide(((i % total) + total) % total);
+
+  useEffect(() => {
+    const id = setInterval(() => setSlide((s) => (s + 1) % total), 6500);
+    return () => clearInterval(id);
+  }, [total]);
+
     <>
       {/* ============== HERO ============== */}
       <section className="relative overflow-hidden bg-gradient-hero">
