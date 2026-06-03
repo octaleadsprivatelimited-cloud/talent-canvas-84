@@ -28,6 +28,13 @@ function AboutPage() {
   const mission = (page?.mission as string) ?? "";
   const values = (page?.values as string[]) ?? [];
 
+  const operatingInRaw = page?.operating_in;
+  const operatingIn = Array.isArray(operatingInRaw)
+    ? (operatingInRaw as string[]).filter(Boolean).join(" and ")
+    : (typeof operatingInRaw === "string" && operatingInRaw.trim())
+      ? operatingInRaw
+      : "India and USA";
+
   return (
     <>
       <PageHero eyebrow="Our story" title={title} subtitle={intro} />
@@ -53,7 +60,7 @@ function AboutPage() {
           {[
             { k: "Founded", v: "2008" },
             { k: "Placements", v: "1,800+" },
-            { k: "Operating in", v: "India and USA" },
+            { k: "Operating in", v: operatingIn },
             { k: "Retention @ 18mo", v: "92%" },
           ].map((s) => (
             <div key={s.k}>
