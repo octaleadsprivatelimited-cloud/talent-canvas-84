@@ -165,10 +165,13 @@ export const LAYOUTS: LayoutMeta[] = [
       { key: "subhead", label: "Subhead", type: "textarea", rows: 2 },
       {
         key: "items",
-        label: "Gallery items (JSON array)",
-        type: "json",
-        rows: 12,
-        help: '[{"image_url":"https://…","caption":"…"}, …]',
+        label: "Gallery items",
+        type: "repeater",
+        itemLabel: "Item",
+        itemFields: [
+          { key: "image_url", label: "Image URL", type: "url" },
+          { key: "caption", label: "Caption", type: "text" },
+        ],
       },
     ],
     sample: {
