@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,22 +12,24 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // If already signed in, verify admin role and route accordingly
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (cancelled || !data.user) return;
+      const { data } = await supabase.auth.getSession();
+      const user = data.session?.user ?? null;
+      if (cancelled || !user) return;
       const { data: roleRow } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", data.user.id)
+        .eq("user_id", user.id)
         .eq("role", "admin")
         .maybeSingle();
       if (cancelled) return;
       if (roleRow) {
-        window.location.href = "/admin";
+        navigate({ to: "/admin" });
       } else {
         await supabase.auth.signOut();
         toast.error("This account is not authorized. Admin access only.");
@@ -36,7 +38,7 @@ function LoginPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [navigate]);
 
   const signInWithGoogle = async () => {
     setLoading(true);
