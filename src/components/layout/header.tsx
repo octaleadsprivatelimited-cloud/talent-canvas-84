@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { supabase } from "@/integrations/firebase/client";
+import { AnimatePresence, motion } from "framer-motion";
 
 const navItems = [
   { to: "/services", label: "Services" },
@@ -67,43 +68,108 @@ export function Header() {
           )}
         </div>
 
-        <button className="lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        <button
+          className="lg:hidden relative p-2 text-foreground/80 hover:text-foreground focus:outline-none"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Toggle menu"
+        >
+          <motion.div
+            animate={{ rotate: open ? 90 : 0, scale: open ? 0.9 : 1 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </motion.div>
         </button>
       </div>
 
-      {open && (
-        <div className="absolute left-0 right-0 top-full border-b border-border bg-background/95 backdrop-blur-md lg:hidden">
-          <div className="container mx-auto flex flex-col gap-1 px-4 py-3">
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
-                onClick={() => setOpen(false)}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute left-0 right-0 top-full border-b border-border bg-background/95 backdrop-blur-md lg:hidden overflow-hidden"
+          >
+            <motion.div
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={{
+                open: {
+                  transition: {
+                    staggerChildren: 0.05,
+                    delayChildren: 0.05
+                  }
+                },
+                closed: {
+                  transition: {
+                    staggerChildren: 0.03,
+                    staggerDirection: -1
+                  }
+                }
+              }}
+              className="container mx-auto flex flex-col gap-1 px-4 py-3"
+            >
+              {navItems.map((item) => (
+                <motion.div
+                  key={item.to}
+                  variants={{
+                    open: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { type: "spring", stiffness: 300, damping: 24 }
+                    },
+                    closed: {
+                      opacity: 0,
+                      y: 10,
+                      transition: { duration: 0.15 }
+                    }
+                  }}
+                >
+                  <Link
+                    to={item.to}
+                    className="block rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                    onClick={() => setOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                variants={{
+                  open: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { type: "spring", stiffness: 300, damping: 24 }
+                  },
+                  closed: {
+                    opacity: 0,
+                    y: 10,
+                    transition: { duration: 0.15 }
+                  }
+                }}
+                className="mt-2 flex flex-col gap-2 border-t border-border pt-3"
               >
-                {item.label}
-              </Link>
-            ))}
-            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-              {isAdmin && (
-                <Button variant="outline" asChild onClick={() => setOpen(false)}>
-                  <Link to="/admin">Admin</Link>
-                </Button>
-              )}
-              {user ? (
-                <Button variant="ghost" onClick={() => supabase.auth.signOut()}>
-                  Sign out
-                </Button>
-              ) : (
-                <Button asChild onClick={() => setOpen(false)}>
-                  <Link to="/contact">Hire with us</Link>
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+                {isAdmin && (
+                  <Button variant="outline" asChild onClick={() => setOpen(false)}>
+                    <Link to="/admin">Admin</Link>
+                  </Button>
+                )}
+                {user ? (
+                  <Button variant="ghost" onClick={() => supabase.auth.signOut()}>
+                    Sign out
+                  </Button>
+                ) : (
+                  <Button asChild onClick={() => setOpen(false)}>
+                    <Link to="/contact">Hire with us</Link>
+                  </Button>
+                )}
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
