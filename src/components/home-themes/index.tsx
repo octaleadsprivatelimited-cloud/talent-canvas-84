@@ -71,8 +71,8 @@ function EditorialHero() {
       <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:64px_64px]" />
       <div className="absolute -right-32 -top-32 h-96 w-96 bg-accent/20 blur-3xl" />
       <div className="container relative mx-auto px-4 pb-0 pt-16 md:pt-24">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-7">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-6">
             <div className="inline-flex items-center gap-3 border-l-2 border-accent pl-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
               <span>Global Talent & Workforce Solutions</span>
               <span className="hidden h-px w-8 bg-accent/50 sm:block" />
@@ -117,10 +117,10 @@ function EditorialHero() {
               </Link>
             </div>
           </div>
-          <div className="lg:col-span-5">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm lg:max-w-none">
-              <div className="absolute -left-4 -top-4 h-24 w-24 bg-accent md:h-40 md:w-40" />
-              <div className="absolute -bottom-4 -right-4 h-20 w-20 border-4 border-accent md:h-32 md:w-32" />
+          <div className="lg:col-span-6">
+            <div className="relative mx-auto aspect-video w-full max-w-xl lg:max-w-none">
+              <div className="absolute -left-4 -top-4 h-16 w-16 bg-accent md:h-24 md:w-24" />
+              <div className="absolute -bottom-4 -right-4 h-12 w-12 border-4 border-accent md:h-20 md:w-20" />
               <video
                 src="/hero-video.mp4"
                 autoPlay
