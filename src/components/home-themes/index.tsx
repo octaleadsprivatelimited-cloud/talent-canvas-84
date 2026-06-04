@@ -68,15 +68,22 @@ function EditorialHero() {
   ];
   return (
     <section id="hero" className="relative snap-start overflow-hidden bg-black min-h-screen flex flex-col justify-between py-16 md:py-24">
-      {/* Background Video */}
+      {/* Background Media */}
       <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+        {/* Mobile Background Image */}
+        <img
+          src="/hero-bg.jpg"
+          alt=""
+          className="block md:hidden h-full w-full object-cover opacity-[0.25]"
+        />
+        {/* Desktop Background Video */}
         <video
           src="/hero-video.mp4"
           autoPlay
           muted
           loop
           playsInline
-          className="h-full w-full object-contain md:object-cover opacity-[0.55]"
+          className="hidden md:block h-full w-full object-cover opacity-[0.55]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/70" />
       </div>
