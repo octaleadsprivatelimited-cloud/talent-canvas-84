@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/user_roles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/user_roles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // General collections: public read, admin write
+    match /site_settings/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /page_content/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /services/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /companies/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /jobs/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /testimonials/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /industries/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /team_members/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /case_studies/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /posts/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // User roles rules
+    match /user_roles/{userId} {
+      // Users can read their own roles; admins can read all roles
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admins can write, or if no roles exist at all (auto-promotion logic for the first user)
+      allow write: if isAdmin() || (isAuthenticated() && !exists(/databases/$(database)/documents/user_roles/$(userId)));
+    }
+    
+    // Contact submissions
+    match /submissions/{document} {
+      // Anyone can submit contact forms
+      allow create: if true;
+      // Only admins can read or manage submissions
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import * as Icons from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 import { DynamicSeo } from "@/components/dynamic-seo";
 
@@ -23,7 +23,7 @@ function IndustriesPage() {
   const { data } = useQuery({
     queryKey: ["industries"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("industries")
         .select("*")
         .eq("published", true)

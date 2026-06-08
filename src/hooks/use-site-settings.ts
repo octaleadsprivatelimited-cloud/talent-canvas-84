@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 
 export type SiteSettings = {
   id: string;
@@ -24,7 +24,7 @@ export function useSiteSettings() {
   return useQuery({
     queryKey: ["site_settings"],
     queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("*").limit(1).maybeSingle();
+      const { data } = await firebase.from("site_settings").select("*").limit(1).maybeSingle();
       return data as SiteSettings | null;
     },
     staleTime: 60_000,

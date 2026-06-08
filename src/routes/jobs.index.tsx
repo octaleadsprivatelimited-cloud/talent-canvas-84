@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { JobCard, type JobCardData } from "@/components/jobs/job-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -19,7 +19,7 @@ function JobsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["jobs", "all"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await firebase
         .from("jobs")
         .select(
           "id,slug,title,location,work_mode,job_type,salary_min,salary_max,salary_currency,featured,created_at,companies(name,slug,logo_url,industry)",

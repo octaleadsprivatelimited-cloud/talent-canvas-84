@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { useAuth } from "./use-auth";
 
 export function useIsAdmin() {
@@ -12,7 +12,7 @@ export function useIsAdmin() {
       setIsAdmin(false);
       return;
     }
-    supabase
+    firebase
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
@@ -23,9 +23,9 @@ export function useIsAdmin() {
           setIsAdmin(true);
         } else {
           // If there are no role records at all in the database, auto-promote the first user.
-          const { data: allRoles } = await supabase.from("user_roles").select("id").limit(1);
+          const { data: allRoles } = await firebase.from("user_roles").select("id").limit(1);
           if (allRoles && allRoles.length === 0) {
-            await supabase.from("user_roles").insert({
+            await firebase.from("user_roles").insert({
               user_id: user.id,
               role: "admin",
             });

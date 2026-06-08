@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { Pencil, Plus, Trash2, ExternalLink, ArrowUp, ArrowDown, X } from "lucide-react";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,7 +90,7 @@ function AdminPages() {
 
   const reload = async () => {
     setLoading(true);
-    const { data, error } = await supabaseAny
+    const { data, error } = await firebaseAny
       .from("custom_pages")
       .select("*")
       .order("sort_order", { ascending: true })
@@ -147,8 +147,8 @@ function AdminPages() {
       sort_order: Number(draft.sort_order) || 0,
     };
     const { error } = draft.id
-      ? await supabaseAny.from("custom_pages").update(payload).eq("id", draft.id)
-      : await supabaseAny.from("custom_pages").insert(payload);
+      ? await firebaseAny.from("custom_pages").update(payload).eq("id", draft.id)
+      : await firebaseAny.from("custom_pages").insert(payload);
     if (error) {
       toast.error(error.message);
       return;
@@ -161,7 +161,7 @@ function AdminPages() {
 
   const remove = async (row: PageRow) => {
     if (!confirm(`Delete page "${row.title}"?`)) return;
-    const { error } = await supabaseAny.from("custom_pages").delete().eq("id", row.id);
+    const { error } = await firebaseAny.from("custom_pages").delete().eq("id", row.id);
     if (error) {
       toast.error(error.message);
       return;

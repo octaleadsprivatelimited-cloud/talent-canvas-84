@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { DynamicSeo } from "@/components/dynamic-seo";
 
 export const Route = createFileRoute("/companies/")({
@@ -13,7 +13,7 @@ function CompaniesPage() {
   const { data } = useQuery({
     queryKey: ["companies", "all"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await firebase
         .from("companies")
         .select("*")
         .order("featured", { ascending: false });

@@ -211,8 +211,9 @@ class FirebaseQueryBuilder {
 
             data = data.map((job: any) => {
               const company =
-                companiesList.find((c: any) => c.id === job.company_id || c.slug === job.company_id) ||
-                null;
+                companiesList.find(
+                  (c: any) => c.id === job.company_id || c.slug === job.company_id,
+                ) || null;
               return { ...job, companies: company };
             });
           } catch (e) {
@@ -599,4 +600,4 @@ export const firebaseClient = {
   },
 };
 
-export const supabase = firebaseClient;
+export const firebase = firebaseClient;

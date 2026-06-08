@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueries } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -22,7 +22,7 @@ function AdminDashboard() {
     queries: counters.map((c) => ({
       queryKey: ["count", c.key],
       queryFn: async () => {
-        const { count } = await supabase.from(c.key).select("*", { count: "exact", head: true });
+        const { count } = await firebase.from(c.key).select("*", { count: "exact", head: true });
         return count ?? 0;
       },
     })),

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, GripVertical } from "lucide-react";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +23,7 @@ function HomepageAdmin() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    supabaseAny
+    firebaseAny
       .from("page_content")
       .select("content")
       .eq("page_key", PAGE_KEY)
@@ -36,7 +36,7 @@ function HomepageAdmin() {
 
   const save = async () => {
     setSaving(true);
-    const { error } = await supabaseAny
+    const { error } = await firebaseAny
       .from("page_content")
       .upsert({ page_key: PAGE_KEY, content }, { onConflict: "page_key" });
     setSaving(false);

@@ -7,8 +7,12 @@ export function Footer() {
   const brand = site?.brand_name ?? "Virelix Consulting";
 
   return (
-    <footer className="border-t border-border bg-surface">
-      <div className="container mx-auto px-4 py-12">
+    <footer
+      className="relative border-t border-border bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url('/footer-bg.jpeg')` }}
+    >
+      <div className="absolute inset-0 bg-surface/60 backdrop-blur-[2px] z-0" />
+      <div className="container relative mx-auto px-4 py-12 z-10">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <Link to="/" className="flex items-center gap-2 font-display text-base font-bold">
@@ -52,7 +56,7 @@ export function Footer() {
             </div>
           </div>
           <FooterCol
-            title="Services"
+            title="What We Do"
             links={[
               { to: "/services", label: "All Services" },
               { to: "/services/executive-search", label: "Executive Search" },

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 
 export const Route = createFileRoute("/insights/$slug")({
@@ -20,7 +20,7 @@ function InsightDetail() {
   const { data, isLoading } = useQuery({
     queryKey: ["post", slug],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("posts")
         .select("*")
         .eq("slug", slug)

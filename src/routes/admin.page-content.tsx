@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +33,7 @@ function PageContentAdmin() {
 
   useEffect(() => {
     setLoading(true);
-    supabaseAny
+    firebaseAny
       .from("page_content")
       .select("content")
       .eq("page_key", active)
@@ -63,7 +63,7 @@ function PageContentAdmin() {
       toast.error("Invalid JSON");
       return;
     }
-    const { error } = await supabaseAny
+    const { error } = await firebaseAny
       .from("page_content")
       .upsert({ page_key: active, content: parsed }, { onConflict: "page_key" });
     if (error) {
@@ -81,7 +81,7 @@ function PageContentAdmin() {
       /* ignore */
     }
     content.operating_in = next;
-    const { error } = await supabaseAny
+    const { error } = await firebaseAny
       .from("page_content")
       .upsert({ page_key: "about", content }, { onConflict: "page_key" });
     if (error) {

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { getServiceImage } from "@/lib/service-images";
 import { DynamicSeo } from "@/components/dynamic-seo";
@@ -18,7 +18,7 @@ type Service = {
 const servicesQuery = queryOptions({
   queryKey: ["services", "published"],
   queryFn: async (): Promise<Service[]> => {
-    const { data } = await supabase
+    const { data } = await firebase
       .from("services")
       .select("id,slug,title,summary,icon,features")
       .eq("published", true)
@@ -110,7 +110,7 @@ function ServicesPage() {
               </span>
             </div>
             <h1 className="text-4xl font-light leading-none tracking-tighter text-foreground sm:text-5xl md:text-7xl lg:text-8xl whitespace-nowrap">
-              Our Service Practices
+              What We Do
             </h1>
           </div>
           <p className="max-w-xs border-l border-border pl-6 text-base leading-relaxed text-muted-foreground md:pl-8 md:text-lg">
@@ -165,9 +165,7 @@ function ServicesPage() {
                     {num}
                   </span>
                   <div className="flex-1">
-                    <h2
-                      className="text-3xl font-medium tracking-tight text-foreground transition-transform duration-500 ease-out group-hover:translate-x-4 md:text-5xl lg:text-6xl"
-                    >
+                    <h2 className="text-3xl font-medium tracking-tight text-foreground transition-transform duration-500 ease-out group-hover:translate-x-4 md:text-5xl lg:text-6xl">
                       {s.title}
                     </h2>
                     <div className="max-h-0 overflow-hidden opacity-0 transition-all duration-700 ease-in-out group-hover:max-h-48 group-hover:opacity-100">

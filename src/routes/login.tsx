@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/login")({
 });
 
 async function routeAfterAuth(userId: string, navigate: ReturnType<typeof useNavigate>) {
-  const { data: roleRow } = await supabase
+  const { data: roleRow } = await firebase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -21,16 +21,16 @@ async function routeAfterAuth(userId: string, navigate: ReturnType<typeof useNav
   if (roleRow) {
     navigate({ to: "/admin" });
   } else {
-    const { data: allRoles } = await supabase.from("user_roles").select("id").limit(1);
+    const { data: allRoles } = await firebase.from("user_roles").select("id").limit(1);
     if (allRoles && allRoles.length === 0) {
-      await supabase.from("user_roles").insert({
+      await firebase.from("user_roles").insert({
         user_id: userId,
         role: "admin",
       });
       navigate({ to: "/admin" });
     } else {
       toast.error("Access denied: You do not have administrator privileges.");
-      await supabase.auth.signOut();
+      await firebase.auth.signOut();
     }
   }
 }
@@ -45,7 +45,7 @@ function LoginPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await firebase.auth.getSession();
       const user = data.session?.user ?? null;
       if (cancelled || !user) return;
       await routeAfterAuth(user.id, navigate);
@@ -58,7 +58,7 @@ function LoginPage() {
   const signInWithGoogle = async () => {
     setLoading(true);
     try {
-      const res = await supabase.auth.signInWithPopupGoogle();
+      const res = await firebase.auth.signInWithPopupGoogle();
       if (res.error) throw res.error;
       if (res.user) {
         await routeAfterAuth(res.user.uid, navigate);
@@ -80,7 +80,7 @@ function LoginPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await firebase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: `${window.location.origin}/login` },
@@ -93,7 +93,7 @@ function LoginPage() {
           setMode("signin");
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await firebase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         if (data.user) await routeAfterAuth(data.user.id, navigate);
       }
@@ -114,9 +114,7 @@ function LoginPage() {
             Admin access
           </span>
         </div>
-        <h1
-          className="text-4xl font-medium leading-[1.05] tracking-tight text-foreground md:text-5xl"
-        >
+        <h1 className="text-4xl font-medium leading-[1.05] tracking-tight text-foreground md:text-5xl">
           Sign in to <span className="italic text-muted-foreground">Virelix</span>
         </h1>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">

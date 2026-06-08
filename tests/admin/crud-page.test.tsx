@@ -7,8 +7,8 @@ const orderMock = vi.fn();
 const selectMock = vi.fn(() => ({ order: orderMock }));
 const fromMock = vi.fn(() => ({ select: selectMock }));
 
-vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { from: (...args: unknown[]) => fromMock(...args) },
+vi.mock("@/integrations/firebase/client", () => ({
+  firebase: { from: (...args: unknown[]) => fromMock(...args) },
 }));
 
 vi.mock("sonner", () => ({
@@ -57,7 +57,7 @@ describe("CrudPage", () => {
     expect(await screen.findByText(/no items yet/i)).toBeInTheDocument();
   });
 
-  it("renders rows returned by supabase", async () => {
+  it("renders rows returned by firebase", async () => {
     orderMock.mockResolvedValueOnce({
       data: [{ id: "1", title: "Hello" }],
       error: null,

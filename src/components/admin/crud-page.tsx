@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { toast } from "sonner";
 
 export type FieldDef = {
@@ -54,7 +54,7 @@ export function CrudPage<T extends Row>({
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabaseAny
+    const { data, error } = await firebaseAny
       .from(table)
       .select("*")
       .order(orderBy, { ascending: asc });
@@ -102,8 +102,8 @@ export function CrudPage<T extends Row>({
     }
     const isNew = !editing.id;
     const { error } = isNew
-      ? await supabaseAny.from(table).insert(payload)
-      : await supabaseAny.from(table).update(payload).eq("id", editing.id);
+      ? await firebaseAny.from(table).insert(payload)
+      : await firebaseAny.from(table).update(payload).eq("id", editing.id);
     if (error) {
       toast.error(error.message);
       return;
@@ -116,7 +116,7 @@ export function CrudPage<T extends Row>({
 
   const remove = async (row: T) => {
     if (!confirm("Delete this item?")) return;
-    const { error } = await supabaseAny.from(table).delete().eq("id", row.id);
+    const { error } = await firebaseAny.from(table).delete().eq("id", row.id);
     if (error) {
       toast.error(error.message);
       return;
@@ -221,7 +221,7 @@ export function CrudPage<T extends Row>({
             slug: "vix-tech",
             description:
               "Leading technology infrastructure and digital platform development agency.",
-            website: "https://virelix.com",
+            website: "https://virelixconsulting.com",
           },
           {
             id: "company-2",
@@ -319,7 +319,7 @@ export function CrudPage<T extends Row>({
       }
 
       for (const item of defaultData) {
-        await supabaseAny.from(table).upsert(item);
+        await firebaseAny.from(table).upsert(item);
       }
       toast.success(`Successfully initialized ${title} with default demo data!`);
       reload();

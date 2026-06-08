@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 
 export const Route = createFileRoute("/case-studies/$slug")({
@@ -20,7 +20,7 @@ function CaseStudyDetail() {
   const { data, isLoading } = useQuery({
     queryKey: ["case_study", slug],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("case_studies")
         .select("*")
         .eq("slug", slug)

@@ -13,7 +13,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeApplier } from "@/components/theme-applier";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 
 function NotFoundComponent() {
   return (
@@ -124,7 +124,7 @@ function AuthSync() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = firebase.auth.onAuthStateChange(() => {
       router.invalidate();
       qc.invalidateQueries();
     });

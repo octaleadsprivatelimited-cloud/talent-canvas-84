@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, MapPin, Briefcase, DollarSign, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,7 +17,7 @@ function JobDetail() {
   const { data: job, isLoading } = useQuery({
     queryKey: ["job", slug],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await firebase
         .from("jobs")
         .select("*, companies(*)")
         .eq("slug", slug)
@@ -34,7 +34,7 @@ function JobDetail() {
       return;
     }
     if (!job) return;
-    const { error } = await supabase
+    const { error } = await firebase
       .from("applications")
       .insert({ job_id: job.id, candidate_id: user.id });
     if (error) toast.error(error.message);

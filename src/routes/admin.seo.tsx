@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,7 +39,7 @@ function SeoAdmin() {
   useEffect(() => {
     setLoading(true);
     const pageKey = `seo:${active}`;
-    supabaseAny
+    firebaseAny
       .from("page_content")
       .select("content")
       .eq("page_key", pageKey)
@@ -52,7 +52,7 @@ function SeoAdmin() {
 
   const save = async () => {
     const pageKey = `seo:${active}`;
-    const { error } = await supabaseAny
+    const { error } = await firebaseAny
       .from("page_content")
       .upsert({ page_key: pageKey, content: row }, { onConflict: "page_key" });
     if (error) return toast.error(error.message);

@@ -28,9 +28,8 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 import { usePageContent } from "@/hooks/use-page-content";
 import { HOMEPAGE_DEFAULTS } from "@/lib/homepage-defaults";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { DynamicSeo } from "@/components/dynamic-seo";
-import { JobCard, type JobCardData } from "@/components/jobs/job-card";
 import { getServiceImage } from "@/lib/service-images";
 import heroTeam from "@/assets/hero-team.jpg";
 import heroPortrait from "@/assets/hero-portrait.jpg";
@@ -112,15 +111,6 @@ const services = [
   },
 ];
 
-const industries = [
-  { icon: Cpu, label: "Information Technology" },
-  { icon: Stethoscope, label: "Healthcare" },
-  { icon: Factory, label: "Engineering & Manufacturing" },
-  { icon: Banknote, label: "Finance & Accounting" },
-  { icon: ShoppingBag, label: "Retail & E-Commerce" },
-  { icon: Building2, label: "Professional Services" },
-];
-
 const process = [
   {
     step: "01",
@@ -184,17 +174,15 @@ const sectionIds = [
   "services",
   "industries",
   "process",
-  "careers",
   "scale",
   "testimonials",
   "cta",
 ] as const;
 const sectionLabels: Record<(typeof sectionIds)[number], string> = {
   hero: "Intro",
-  services: "Services",
+  services: "What We Do",
   industries: "Industries",
   process: "Process",
-  careers: "Careers",
   scale: "Scale",
   testimonials: "Stories",
   cta: "Contact",
@@ -265,25 +253,10 @@ function Index() {
   const { data: copy } = usePageContent("home", HOMEPAGE_DEFAULTS);
   const [activeService, setActiveService] = useState(0);
 
-  const { data: dbJobs } = useQuery({
-    queryKey: ["jobs", "featured-home"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("jobs")
-        .select(
-          "id,slug,title,location,work_mode,job_type,salary_min,salary_max,salary_currency,featured,created_at,companies(name,slug,logo_url,industry)",
-        )
-        .eq("status", "published")
-        .eq("featured", true)
-        .limit(3);
-      return data as unknown as JobCardData[];
-    },
-  });
-
   const { data: dbTestimonials } = useQuery({
     queryKey: ["testimonials", "published"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("testimonials")
         .select("id, quote, author_name, author_role, company")
         .eq("published", true)
@@ -299,8 +272,49 @@ function Index() {
           role: [t.author_role, t.company].filter(Boolean).join(" · "),
         }))
       : testimonials;
+
+  const { data: dbIndustries } = useQuery({
+    queryKey: ["industries"],
+    queryFn: async () => {
+      const { data } = await firebase
+        .from("industries")
+        .select("*")
+        .eq("published", true)
+        .order("sort_order");
+      return data ?? [];
+    },
+  });
+
+  const liveIndustries =
+    dbIndustries && dbIndustries.length > 0
+      ? dbIndustries.map((ind: any) => {
+          let IconComponent = Building2;
+          const iconName = ind.icon?.toLowerCase();
+          if (iconName === "cpu") IconComponent = Cpu;
+          else if (iconName === "heart" || iconName === "stethoscope") IconComponent = Stethoscope;
+          else if (iconName === "factory" || iconName === "truck") IconComponent = Factory;
+          else if (iconName === "wallet" || iconName === "banknote") IconComponent = Banknote;
+          else if (iconName === "shopping-bag") IconComponent = ShoppingBag;
+
+          return {
+            icon: IconComponent,
+            label: ind.label,
+            slug: ind.slug,
+          };
+        })
+      : [
+          { icon: Cpu, label: "Information Technology", slug: "technology-software" },
+          { icon: Stethoscope, label: "Healthcare", slug: "healthcare-lifesciences" },
+          { icon: Factory, label: "Engineering & Manufacturing", slug: "logistics-supply-chain" },
+          { icon: Banknote, label: "Finance & Accounting", slug: "financial-services" },
+          { icon: ShoppingBag, label: "Retail & E-Commerce", slug: "retail-ecommerce" },
+          { icon: Building2, label: "Professional Services", slug: "professional-services" },
+        ];
+
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<string>("hero");
+  const [isTestimonialsPaused, setIsTestimonialsPaused] = useState(false);
+  const [activeStep, setActiveStep] = useState<string | null>("01");
 
   useEffect(() => {
     const root = scrollerRef.current;
@@ -376,10 +390,7 @@ function Index() {
       <HomeHero theme={(settings?.home_theme as ThemeKey) ?? "editorial"} />
 
       {/* ============== SERVICES ============== */}
-      <section
-        id="services"
-        className="relative w-full snap-start py-20 md:py-28 overflow-hidden"
-      >
+      <section id="services" className="relative w-full snap-start py-20 md:py-28 overflow-hidden">
         {/* Section background image */}
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.12] dark:opacity-[0.20] pointer-events-none">
           <img
@@ -390,125 +401,128 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         </div>
         <div className="container mx-auto flex min-h-[80vh] flex-col justify-center px-4 relative z-10">
-        <div className="grid gap-10 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-7">
-            <div className="inline-flex items-center gap-3 border-l-2 border-primary pl-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              {copy.services_eyebrow}
+          <div className="grid gap-10 md:grid-cols-12 md:items-end">
+            <div className="md:col-span-7">
+              <div className="inline-flex items-center gap-3 border-l-2 border-primary pl-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                {copy.services_eyebrow}
+              </div>
+              <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+                {copy.services_heading}{" "}
+                <span className="text-primary">{copy.services_heading_accent}</span>
+              </h2>
             </div>
-            <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
-              {copy.services_heading}{" "}
-              <span className="text-primary">{copy.services_heading_accent}</span>
-            </h2>
-          </div>
-          <div className="md:col-span-5">
-            <p className="text-muted-foreground">{copy.services_intro}</p>
-          </div>
-        </div>
-
-        {/* Tabbed Interactive Showcase (Adecco-style) */}
-        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_2fr] items-start">
-          {/* Tabs Column */}
-          <div className="flex flex-col gap-2 border-l border-border">
-            {detailedServices.map((ds, idx) => {
-              const isActive = activeService === idx;
-              return (
-                <button
-                  key={ds.title}
-                  onClick={() => setActiveService(idx)}
-                  className={`group relative text-left py-4 px-6 border-l-2 -ml-[2px] transition duration-300 ${
-                    isActive
-                      ? "border-primary bg-surface/50 text-foreground font-semibold"
-                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-surface/20"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-[10px] font-bold ${isActive ? "text-primary" : "text-muted-foreground/60"}`}
-                    >
-                      0{idx + 1}
-                    </span>
-                    <span className="text-sm uppercase tracking-wider">
-                      {ds.title.split(" & ")[0]}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+            <div className="md:col-span-5">
+              <p className="text-muted-foreground">{copy.services_intro}</p>
+            </div>
           </div>
 
-          <div className="border border-border bg-card p-8 md:p-10 relative overflow-hidden transition-all duration-500 group">
-            {/* Dynamic service background watermark */}
-            <div className="absolute inset-0 -z-10 transition-opacity duration-700 pointer-events-none">
-              <img
-                src={(() => {
-                  const slugs = ["contract-staffing", "executive-search", "rpo", "training"];
-                  return getServiceImage(slugs[activeService]).src;
-                })()}
-                alt=""
-                className="h-full w-full object-cover opacity-[0.15] dark:opacity-[0.25] mix-blend-luminosity filter blur-[1px] transition-all duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-card" />
+          {/* Tabbed Interactive Showcase (Adecco-style) */}
+          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_2fr] items-start">
+            {/* Tabs Column */}
+            <div className="flex flex-col gap-2 border-l border-border">
+              {detailedServices.map((ds, idx) => {
+                const isActive = activeService === idx;
+                return (
+                  <button
+                    key={ds.title}
+                    onClick={() => setActiveService(idx)}
+                    className={`group relative text-left py-4 px-6 border-l-2 -ml-[2px] transition duration-300 ${
+                      isActive
+                        ? "border-primary bg-surface/50 text-foreground font-semibold"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-surface/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-[10px] font-bold ${isActive ? "text-primary" : "text-muted-foreground/60"}`}
+                      >
+                        0{idx + 1}
+                      </span>
+                      <span className="text-sm uppercase tracking-wider">
+                        {ds.title.split(" & ")[0]}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="absolute right-6 top-6 opacity-[0.04] text-primary group-hover:opacity-[0.07] transition-opacity duration-300">
-              {(() => {
-                const Icon = detailedServices[activeService].icon;
-                return <Icon className="h-40 w-40" />;
-              })()}
-            </div>
+            <div className="border border-border bg-card p-8 md:p-10 relative overflow-hidden transition-all duration-500 group">
+              {/* Dynamic service background watermark */}
+              <div className="absolute inset-0 -z-10 transition-opacity duration-700 pointer-events-none">
+                <img
+                  src={(() => {
+                    const slugs = ["contract-staffing", "executive-search", "rpo", "training"];
+                    return getServiceImage(slugs[activeService]).src;
+                  })()}
+                  alt=""
+                  className="h-full w-full object-cover opacity-[0.15] dark:opacity-[0.25] mix-blend-luminosity filter blur-[1px] transition-all duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-card" />
+              </div>
 
-            <div className="relative">
-              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+              <div className="absolute right-6 top-6 opacity-[0.04] text-primary group-hover:opacity-[0.07] transition-opacity duration-300">
                 {(() => {
                   const Icon = detailedServices[activeService].icon;
-                  return <Icon className="h-4 w-4" />;
+                  return <Icon className="h-40 w-40" />;
                 })()}
-                Solution Overview
-              </div>
-              <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
-                {detailedServices[activeService].title}
-              </h3>
-              <p className="mt-1 text-sm text-muted-foreground italic">
-                {detailedServices[activeService].subtitle}
-              </p>
-
-              <p className="mt-6 text-sm text-foreground/80 leading-relaxed max-w-2xl">
-                {detailedServices[activeService].desc}
-              </p>
-
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {detailedServices[activeService].bullets.map((bullet) => (
-                  <div key={bullet} className="flex gap-2.5 items-start">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                    <span className="text-xs text-muted-foreground">{bullet}</span>
-                  </div>
-                ))}
               </div>
 
-              <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-8 items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="font-display text-3xl font-bold text-accent">
-                    {detailedServices[activeService].stat}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground leading-tight max-w-[140px]">
-                    {detailedServices[activeService].statLabel}
-                  </div>
+              <div className="relative">
+                <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  {(() => {
+                    const Icon = detailedServices[activeService].icon;
+                    return <Icon className="h-4 w-4" />;
+                  })()}
+                  Solution Overview
                 </div>
-                <Link
-                  to="/services"
-                  className="text-xs font-bold uppercase tracking-wider text-primary hover:underline inline-flex items-center gap-1.5"
-                >
-                  Explore solutions portfolio <ArrowUpRight className="h-4 w-4" />
-                </Link>
+                <h3 className="mt-4 font-display text-2xl font-bold md:text-3xl">
+                  {detailedServices[activeService].title}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground italic">
+                  {detailedServices[activeService].subtitle}
+                </p>
+
+                <p className="mt-6 text-sm text-foreground/80 leading-relaxed max-w-2xl">
+                  {detailedServices[activeService].desc}
+                </p>
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {detailedServices[activeService].bullets.map((bullet) => (
+                    <div key={bullet} className="flex gap-2.5 items-start">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                      <span className="text-xs text-muted-foreground">{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-8 items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="font-display text-3xl font-bold text-accent">
+                      {detailedServices[activeService].stat}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground leading-tight max-w-[140px]">
+                      {detailedServices[activeService].statLabel}
+                    </div>
+                  </div>
+                  <Link
+                    to="/services"
+                    className="text-xs font-bold uppercase tracking-wider text-primary hover:underline inline-flex items-center gap-1.5"
+                  >
+                    Explore solutions portfolio <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
       {/* ============== IMAGE + INDUSTRIES SPLIT ============== */}
-      <section id="industries" className="relative w-full snap-start bg-surface py-20 md:py-28 overflow-hidden">
+      <section
+        id="industries"
+        className="relative w-full snap-start bg-surface py-20 md:py-28 overflow-hidden"
+      >
         {/* Section background image */}
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.12] dark:opacity-[0.20] pointer-events-none">
           <img
@@ -523,8 +537,8 @@ function Index() {
             <div className="relative lg:col-span-5">
               <div className="absolute -left-4 -top-4 h-24 w-24 border-4 border-primary" />
               <img
-                src={heroHandshake}
-                alt="Closing a deal"
+                src="/industries-bg.jpg"
+                alt="Industries"
                 width={800}
                 height={600}
                 loading="lazy"
@@ -548,15 +562,17 @@ function Index() {
               <p className="mt-4 text-muted-foreground">{copy.industries_intro}</p>
 
               <div className="mt-8 grid gap-px bg-border sm:grid-cols-2">
-                {industries.map((i) => (
-                  <div
+                {liveIndustries.map((i: any) => (
+                  <Link
                     key={i.label}
-                    className="flex items-center gap-4 bg-background p-5 transition hover:bg-primary hover:text-primary-foreground"
+                    to="/industries/$slug"
+                    params={{ slug: i.slug }}
+                    className="flex items-center gap-4 bg-background p-5 transition hover:bg-primary hover:text-primary-foreground group cursor-pointer"
                   >
-                    <i.icon className="h-5 w-5 shrink-0 text-primary" />
+                    <i.icon className="h-5 w-5 shrink-0 text-primary group-hover:text-primary-foreground" />
                     <span className="font-semibold">{i.label}</span>
-                    <ArrowRight className="ml-auto h-4 w-4 opacity-40" />
-                  </div>
+                    <ArrowRight className="ml-auto h-4 w-4 opacity-40 group-hover:translate-x-1 transition-transform group-hover:opacity-100 group-hover:text-primary-foreground" />
+                  </Link>
                 ))}
               </div>
             </div>
@@ -567,106 +583,82 @@ function Index() {
       {/* ============== PROCESS ============== */}
       <section id="process" className="relative w-full snap-start py-20 md:py-28 overflow-hidden">
         {/* Section background image */}
-        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.12] dark:opacity-[0.20] pointer-events-none">
+        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.35] dark:opacity-[0.45] pointer-events-none">
           <img
-            src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1920&q=70"
+            src="/how-we-work-bg.jpg"
             alt=""
             className="h-full w-full object-cover mix-blend-luminosity filter blur-[1px]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
         </div>
         <div className="container mx-auto px-4 relative z-10">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-            <span className="h-px w-8 bg-primary" />
-            {copy.process_eyebrow}
-            <span className="h-px w-8 bg-primary" />
-          </div>
-          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
-            {copy.process_heading}{" "}
-            <span className="text-primary">{copy.process_heading_accent}</span>
-          </h2>
-        </div>
-
-        <div className="relative mt-16 grid gap-0 border-t border-l border-border md:grid-cols-3">
-          {process.map((p) => (
-            <div key={p.step} className="border-b border-r border-border bg-card p-8 md:p-10">
-              <div className="flex items-baseline gap-4">
-                <span className="font-display text-5xl font-bold text-primary/15">{p.step}</span>
-                <p.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="mt-4 font-display text-2xl font-bold">{p.title}</h3>
-              <p className="mt-3 text-muted-foreground">{p.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 grid gap-8 border-l-4 border-accent bg-card p-8 md:grid-cols-2 md:items-center md:p-10">
-          <div>
-            <h3 className="font-display text-2xl font-bold">{copy.why_heading}</h3>
-            <p className="mt-2 text-muted-foreground">{copy.why_intro}</p>
-          </div>
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {copy.why_bullets.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm font-medium">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
-
-      {/* ============== FEATURED JOBS SECTION (Adecco-style career board) ============== */}
-      <section
-        id="careers"
-        className="relative w-full snap-start py-20 md:py-28 border-t border-border overflow-hidden"
-      >
-        {/* Section background image */}
-        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.12] dark:opacity-[0.20] pointer-events-none">
-          <img
-            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=70"
-            alt=""
-            className="h-full w-full object-cover mix-blend-luminosity filter blur-[1px]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
-        </div>
-        <div className="container mx-auto flex min-h-[80vh] flex-col justify-center px-4 relative z-10">
-        <div className="grid gap-10 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-7">
-            <div className="inline-flex items-center gap-3 border-l-2 border-primary pl-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              Careers
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+              <span className="h-px w-8 bg-primary" />
+              {copy.process_eyebrow}
+              <span className="h-px w-8 bg-primary" />
             </div>
             <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
-              Explore active <span className="text-primary">career opportunities</span>.
+              {copy.process_heading}{" "}
+              <span className="text-primary">{copy.process_heading_accent}</span>
             </h2>
           </div>
-          <div className="md:col-span-5 text-right">
-            <Link
-              to="/jobs"
-              className="text-sm font-semibold text-primary hover:underline inline-flex items-center gap-1.5"
-            >
-              View all open positions <ArrowRight className="h-4 w-4" />
-            </Link>
+
+          <div className="relative mt-16 grid gap-0 border-t border-l border-border md:grid-cols-3">
+            {process.map((p) => {
+              const isOpen = activeStep === p.step;
+              return (
+                <div
+                  key={p.step}
+                  onClick={() => setActiveStep(activeStep === p.step ? null : p.step)}
+                  className="border-b border-r border-border bg-card p-8 md:p-10 cursor-pointer select-none md:cursor-default"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-baseline gap-4">
+                      <span className="font-display text-5xl font-bold text-primary/15">
+                        {p.step}
+                      </span>
+                      <p.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    {/* Expand icon for mobile only */}
+                    <div
+                      className="md:hidden text-primary transition-transform duration-300"
+                      style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <h3 className="mt-4 font-display text-2xl font-bold">{p.title}</h3>
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden md:max-h-none ${
+                      isOpen
+                        ? "max-h-40 mt-3 opacity-100"
+                        : "max-h-0 md:max-h-none mt-0 md:mt-3 opacity-0 md:opacity-100"
+                    }`}
+                  >
+                    <p className="text-muted-foreground">{p.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-12 grid gap-8 border-l-4 border-accent bg-card p-8 md:grid-cols-2 md:items-center md:p-10">
+            <div>
+              <h3 className="font-display text-2xl font-bold">{copy.why_heading}</h3>
+              <p className="mt-2 text-muted-foreground">{copy.why_intro}</p>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {copy.why_bullets.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm font-medium">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-
-        <div className="mt-12">
-          {dbJobs && dbJobs.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {dbJobs.map((j) => (
-                <JobCard key={j.id} job={j} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-border bg-card p-10 text-center text-muted-foreground">
-              No active job openings listed right now. Check back soon or register with us.
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
+      </section>
 
       {/* ============== GLOBAL PRESENCE & PHILOSOPHY (Adecco Group style) ============== */}
       <section
@@ -674,9 +666,9 @@ function Index() {
         className="relative w-full snap-start bg-foreground text-background py-20 md:py-28 overflow-hidden"
       >
         {/* Section background image */}
-        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.18] pointer-events-none">
+        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.35] pointer-events-none">
           <img
-            src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1920&q=70"
+            src="/our-scale-bg.jpg"
             alt=""
             className="h-full w-full object-cover mix-blend-overlay filter blur-[1px]"
           />
@@ -768,7 +760,10 @@ function Index() {
       </section>
 
       {/* ============== TESTIMONIALS ============== */}
-      <section id="testimonials" className="relative w-full snap-start bg-surface py-20 md:py-28 overflow-hidden">
+      <section
+        id="testimonials"
+        className="relative w-full snap-start bg-surface py-20 md:py-28 overflow-hidden"
+      >
         {/* Section background image */}
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden opacity-[0.12] dark:opacity-[0.20] pointer-events-none">
           <img
@@ -788,7 +783,8 @@ function Index() {
             </h2>
           </div>
 
-          <div className="mt-12 grid gap-0 border-t border-l border-border md:grid-cols-3">
+          {/* Desktop Grid Layout */}
+          <div className="mt-12 hidden md:grid gap-0 border-t border-l border-border md:grid-cols-3">
             {liveTestimonials.map((t: any) => (
               <figure
                 key={t.name}
@@ -810,6 +806,41 @@ function Index() {
               </figure>
             ))}
           </div>
+
+          {/* Mobile Auto-Scrolling Layout */}
+          <div className="mt-8 md:hidden overflow-hidden relative w-full border-y border-border py-4">
+            <div
+              className="animate-marquee flex gap-4"
+              style={{
+                animationPlayState: isTestimonialsPaused ? "paused" : "running",
+              }}
+              onMouseEnter={() => setIsTestimonialsPaused(true)}
+              onMouseLeave={() => setIsTestimonialsPaused(false)}
+              onTouchStart={() => setIsTestimonialsPaused(true)}
+              onTouchEnd={() => setIsTestimonialsPaused(false)}
+            >
+              {[...liveTestimonials, ...liveTestimonials].map((t: any, idx: number) => (
+                <figure
+                  key={`${t.name}-${idx}`}
+                  className="flex flex-col bg-card p-6 w-[280px] shrink-0 border border-border shadow-sm rounded-none"
+                >
+                  <Quote className="h-6 w-6 text-primary/30" />
+                  <div className="mt-2 flex gap-0.5 text-accent">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                    ))}
+                  </div>
+                  <blockquote className="mt-3 flex-1 text-sm leading-relaxed line-clamp-4">
+                    "{t.quote}"
+                  </blockquote>
+                  <figcaption className="mt-4 border-t border-border pt-3">
+                    <p className="font-semibold text-sm">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -826,39 +857,39 @@ function Index() {
         </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="relative overflow-hidden bg-gradient-hero p-10 md:p-16">
-          <div className="absolute -right-20 -top-20 h-72 w-72 bg-accent/15 blur-3xl" />
-          <div className="absolute inset-y-0 left-0 w-2 bg-accent" />
-          <div className="relative grid gap-8 md:grid-cols-2 md:items-center">
-            <div>
-              <h2 className="font-display text-4xl font-bold tracking-tight text-gradient-hero-foreground md:text-5xl">
-                {copy.cta_heading}
-              </h2>
-              <p className="mt-4 max-w-lg text-gradient-hero-foreground/80">
-                {copy.cta_description}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 md:justify-end">
-              <Button
-                size="lg"
-                variant="secondary"
-                asChild
-                className="rounded-none px-7 py-6 text-base font-semibold shadow-[6px_6px_0_0_hsl(var(--accent))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_hsl(var(--accent))]"
-              >
-                <a href={copy.cta_primary_to}>{copy.cta_primary_label}</a>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="rounded-none border-gradient-hero-foreground/30 bg-transparent px-7 py-6 text-base text-gradient-hero-foreground hover:bg-gradient-hero-foreground/10 hover:text-gradient-hero-foreground"
-              >
-                <a href={copy.cta_secondary_to}>{copy.cta_secondary_label}</a>
-              </Button>
+            <div className="absolute -right-20 -top-20 h-72 w-72 bg-accent/15 blur-3xl" />
+            <div className="absolute inset-y-0 left-0 w-2 bg-accent" />
+            <div className="relative grid gap-8 md:grid-cols-2 md:items-center">
+              <div>
+                <h2 className="font-display text-4xl font-bold tracking-tight text-gradient-hero-foreground md:text-5xl">
+                  {copy.cta_heading}
+                </h2>
+                <p className="mt-4 max-w-lg text-gradient-hero-foreground/80">
+                  {copy.cta_description}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 md:justify-end">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  asChild
+                  className="rounded-none px-7 py-6 text-base font-semibold shadow-[6px_6px_0_0_hsl(var(--accent))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_hsl(var(--accent))]"
+                >
+                  <a href={copy.cta_primary_to}>{copy.cta_primary_label}</a>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="rounded-none border-gradient-hero-foreground/30 bg-transparent px-7 py-6 text-base text-gradient-hero-foreground hover:bg-gradient-hero-foreground/10 hover:text-gradient-hero-foreground"
+                >
+                  <a href={copy.cta_secondary_to}>{copy.cta_secondary_label}</a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
     </div>
   );
 }

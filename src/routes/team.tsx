@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Linkedin, Mail } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 import { DynamicSeo } from "@/components/dynamic-seo";
 
@@ -19,7 +19,7 @@ function TeamPage() {
   const { data } = useQuery({
     queryKey: ["team_members"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("team_members")
         .select("*")
         .eq("published", true)

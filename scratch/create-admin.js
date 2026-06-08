@@ -17,7 +17,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const run = async () => {
-  const email = "admin@virelix.com";
+  const email = "admin@virelixconsulting.com";
   const password = "AdminPassword123!";
   let userId = null;
 
@@ -38,11 +38,11 @@ const run = async () => {
   // Check if role already exists in user_roles
   const q = query(collection(db, "user_roles"), where("user_id", "==", userId));
   const querySnapshot = await getDocs(q);
-  
+
   if (querySnapshot.empty) {
     const docRef = await addDoc(collection(db, "user_roles"), {
       user_id: userId,
-      role: "admin"
+      role: "admin",
     });
     console.log("Assigned admin role in document:", docRef.id);
   } else {

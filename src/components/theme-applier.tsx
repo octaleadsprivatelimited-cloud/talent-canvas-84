@@ -43,8 +43,8 @@ export function ThemeApplier() {
       if (detail?.theme) applyTheme(detail.theme);
       else applyTheme(settings?.home_theme ?? "editorial");
     }
-    window.addEventListener("lovable:preview-theme", onPreview as EventListener);
-    return () => window.removeEventListener("lovable:preview-theme", onPreview as EventListener);
+    window.addEventListener("site:preview-theme", onPreview as EventListener);
+    return () => window.removeEventListener("site:preview-theme", onPreview as EventListener);
   }, [settings?.home_theme]);
 
   return null;

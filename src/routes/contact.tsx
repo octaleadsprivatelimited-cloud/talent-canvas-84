@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { z } from "zod";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,7 @@ function ContactPage() {
   const { data: page } = useQuery({
     queryKey: ["page_content", "contact"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("page_content")
         .select("content")
         .eq("page_key", "contact")
@@ -49,7 +49,7 @@ function ContactPage() {
   const { data: site } = useQuery({
     queryKey: ["site_settings"],
     queryFn: async () => {
-      const { data } = await supabase.from("site_settings").select("*").maybeSingle();
+      const { data } = await firebase.from("site_settings").select("*").maybeSingle();
       return data;
     },
   });
@@ -66,7 +66,7 @@ function ContactPage() {
   const submit = useMutation({
     mutationFn: async (payload: typeof form) => {
       const parsed = schema.parse(payload);
-      const { error } = await supabase.from("contact_submissions").insert(parsed);
+      const { error } = await firebase.from("contact_submissions").insert(parsed);
       if (error) throw error;
     },
     onSuccess: () => {

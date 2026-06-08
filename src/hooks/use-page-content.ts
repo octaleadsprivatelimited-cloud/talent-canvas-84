@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 
 export type PageContent = Record<string, unknown>;
 
@@ -13,7 +13,7 @@ export function usePageContent<T extends PageContent>(pageKey: string, defaults:
   const q = useQuery({
     queryKey: ["page_content", pageKey],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("page_content")
         .select("content")
         .eq("page_key", pageKey)

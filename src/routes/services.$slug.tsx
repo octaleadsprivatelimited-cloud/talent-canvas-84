@@ -1,7 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, FileText, ArrowUpRight } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  ArrowUpRight,
+} from "lucide-react";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { getServiceImage } from "@/lib/service-images";
 import { useState } from "react";
@@ -20,7 +28,7 @@ const serviceQuery = (slug: string) =>
   queryOptions({
     queryKey: ["service", slug],
     queryFn: async (): Promise<Service | null> => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("services")
         .select("id,slug,title,summary,body,icon,features")
         .eq("slug", slug)
@@ -217,10 +225,7 @@ function ServiceDetail() {
   const { data: caseStudies } = useQuery({
     queryKey: ["case_studies", "published"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("case_studies")
-        .select("*")
-        .eq("published", true);
+      const { data } = await firebase.from("case_studies").select("*").eq("published", true);
       return data ?? [];
     },
   });
@@ -229,10 +234,16 @@ function ServiceDetail() {
 
   const additions = SERVICE_ADDITIONS[data.slug];
   const relatedCaseStudies = (caseStudies ?? []).filter((cs: any) => {
-    if (data.slug === "executive-search") return cs.slug.includes("c-suite") || cs.slug.includes("search");
-    if (data.slug === "it-recruitment") return cs.slug.includes("medical") || cs.slug.includes("unicorn");
-    if (data.slug === "rpo-workforce-solutions") return cs.slug.includes("unicorn") || cs.slug.includes("rpo");
-    if (data.slug === "consulting-training") return cs.slug.includes("training") || cs.slug.includes("unicorn") || cs.slug.includes("medical");
+    if (data.slug === "executive-search")
+      return cs.slug.includes("c-suite") || cs.slug.includes("search");
+    if (data.slug === "it-recruitment")
+      return cs.slug.includes("medical") || cs.slug.includes("unicorn");
+    if (data.slug === "rpo-workforce-solutions")
+      return cs.slug.includes("unicorn") || cs.slug.includes("rpo");
+    if (data.slug === "consulting-training")
+      return (
+        cs.slug.includes("training") || cs.slug.includes("unicorn") || cs.slug.includes("medical")
+      );
     return false;
   });
 
@@ -379,7 +390,9 @@ function ServiceDetail() {
                       params={{ slug: cs.slug }}
                       className="group border border-border bg-card p-6 transition hover:bg-surface/50"
                     >
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-accent">{cs.client}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                        {cs.client}
+                      </div>
                       <h4 className="mt-2 font-display text-lg font-bold group-hover:text-primary transition">
                         {cs.title}
                       </h4>
@@ -408,7 +421,10 @@ function ServiceDetail() {
                   {additions.faqs.map((faq, i) => {
                     const isOpen = openFaq === i;
                     return (
-                      <div key={i} className="border border-border bg-card transition-all duration-300">
+                      <div
+                        key={i}
+                        className="border border-border bg-card transition-all duration-300"
+                      >
                         <button
                           onClick={() => setOpenFaq(isOpen ? null : i)}
                           className="flex w-full items-center justify-between p-6 text-left"
@@ -442,9 +458,7 @@ function ServiceDetail() {
                 Engage
               </span>
             </div>
-            <h3 className="text-2xl font-semibold text-foreground">
-              Start a conversation
-            </h3>
+            <h3 className="text-2xl font-semibold text-foreground">Start a conversation</h3>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Share your hiring or workforce need — a Virelix consultant will respond within one
               business day with next steps.

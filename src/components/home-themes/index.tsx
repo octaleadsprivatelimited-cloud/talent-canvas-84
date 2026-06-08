@@ -35,16 +35,69 @@ export const THEMES: {
   preview: string;
   hasVideo?: boolean;
 }[] = [
-  { key: "editorial", name: "Editorial Bold", tagline: "Sharp, angular, magazine-style collage.", preview: heroTeam },
-  { key: "mono", name: "Minimal Mono", tagline: "Calm monochrome with oversized typography.", preview: themeMono },
-  { key: "aurora", name: "Aurora Gradient", tagline: "Vibrant gradient, glassy cards, modern tech.", preview: themeAurora },
-  { key: "magazine", name: "Magazine Split", tagline: "Full-bleed cinematic editorial split.", preview: themeMagazine },
-  { key: "noir", name: "Dark Noir", tagline: "Luxury black with warm gold accents.", preview: themeNoir },
-  { key: "cinema", name: "Cinema Reel", tagline: "Full-bleed video hero, dramatic serif overlay.", preview: themeCinema, hasVideo: true },
-  { key: "pulse", name: "Pulse Split", tagline: "Split layout with looping video panel.", preview: themePulse, hasVideo: true },
-  { key: "terracotta", name: "Terracotta Warm", tagline: "Earthy sandstone palette with sage accents.", preview: themeTerracotta },
-  { key: "glass", name: "Glass Aurora", tagline: "Iridescent pastel glassmorphism.", preview: themeGlass },
-  { key: "brutalist", name: "Brutalist Pop", tagline: "High contrast yellow + black, no apologies.", preview: themeBrutalist },
+  {
+    key: "editorial",
+    name: "Editorial Bold",
+    tagline: "Sharp, angular, magazine-style collage.",
+    preview: heroTeam,
+  },
+  {
+    key: "mono",
+    name: "Minimal Mono",
+    tagline: "Calm monochrome with oversized typography.",
+    preview: themeMono,
+  },
+  {
+    key: "aurora",
+    name: "Aurora Gradient",
+    tagline: "Vibrant gradient, glassy cards, modern tech.",
+    preview: themeAurora,
+    hasVideo: true,
+  },
+  {
+    key: "magazine",
+    name: "Magazine Split",
+    tagline: "Full-bleed cinematic editorial split.",
+    preview: themeMagazine,
+  },
+  {
+    key: "noir",
+    name: "Dark Noir",
+    tagline: "Luxury black with warm gold accents.",
+    preview: themeNoir,
+  },
+  {
+    key: "cinema",
+    name: "Cinema Reel",
+    tagline: "Full-bleed video hero, dramatic serif overlay.",
+    preview: themeCinema,
+    hasVideo: true,
+  },
+  {
+    key: "pulse",
+    name: "Pulse Split",
+    tagline: "Split layout with looping video panel.",
+    preview: themePulse,
+    hasVideo: true,
+  },
+  {
+    key: "terracotta",
+    name: "Terracotta Warm",
+    tagline: "Earthy sandstone palette with sage accents.",
+    preview: themeTerracotta,
+  },
+  {
+    key: "glass",
+    name: "Glass Aurora",
+    tagline: "Iridescent pastel glassmorphism.",
+    preview: themeGlass,
+  },
+  {
+    key: "brutalist",
+    name: "Brutalist Pop",
+    tagline: "High contrast yellow + black, no apologies.",
+    preview: themeBrutalist,
+  },
 ];
 
 const stats = [
@@ -67,14 +120,17 @@ function EditorialHero() {
     "WORKFORCE SOLUTIONS",
   ];
   return (
-    <section id="hero" className="relative snap-start overflow-hidden bg-black min-h-screen flex flex-col justify-between py-16 md:py-24">
+    <section
+      id="hero"
+      className="relative snap-start overflow-hidden bg-[#18182b] min-h-screen flex flex-col justify-between py-16 md:py-24"
+    >
       {/* Background Media */}
       <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
         {/* Mobile Background Image */}
         <img
           src="/hero-bg.jpg"
           alt=""
-          className="block md:hidden h-full w-full object-cover opacity-[0.25]"
+          className="block md:hidden h-full w-full object-cover opacity-[0.45]"
         />
         {/* Desktop Background Video */}
         <video
@@ -83,9 +139,9 @@ function EditorialHero() {
           muted
           loop
           playsInline
-          className="hidden md:block h-full w-full object-cover opacity-[0.55]"
+          className="hidden md:block h-full w-full object-cover opacity-[0.7]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/50" />
       </div>
 
       <div className="container relative mx-auto px-4 z-10 my-auto">
@@ -93,9 +149,7 @@ function EditorialHero() {
           <div className="inline-flex items-center gap-3 border-l-2 border-accent pl-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
             <span>Global Talent & Workforce Solutions</span>
             <span className="hidden h-px w-8 bg-accent/50 sm:block" />
-            <span className="hidden text-white/60 sm:inline">
-              Delaware, USA
-            </span>
+            <span className="hidden text-white/60 sm:inline">Delaware, USA</span>
           </div>
           <h1 className="mt-6 font-display text-5xl font-bold leading-[0.95] tracking-tight text-white md:text-7xl lg:text-[5.5rem]">
             Building
@@ -236,26 +290,25 @@ function AuroraHero() {
       id="hero"
       className="relative min-h-screen snap-start overflow-hidden bg-[#0a0a1f] text-white"
     >
-      <img
-        src={themeAurora}
-        alt=""
-        aria-hidden
-        className="absolute inset-0 h-full w-full object-cover opacity-70"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a1f]/30 via-[#0a0a1f]/40 to-[#0a0a1f]" />
-      <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-fuchsia-500/30 blur-3xl" />
-      <div className="absolute -right-24 top-10 h-96 w-96 rounded-full bg-cyan-400/30 blur-3xl" />
+      <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+        <video
+          src="/aurora-bg.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover"
+        />
+      </div>
+
 
       <div className="container relative mx-auto px-4 pt-20 pb-16 md:pt-28">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-medium backdrop-blur-md">
             <Sparkles className="h-3.5 w-3.5 text-fuchsia-300" /> Global Talent · USA + India
           </span>
-          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
-            The talent platform for{" "}
-            <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-amber-200 bg-clip-text text-transparent">
-              ambitious teams.
-            </span>
+          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-7xl">
+            The talent platform for ambitious teams.
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base text-white/70 md:text-lg">
             Executive search, embedded RPO, and workforce consulting — wrapped in a delivery model
@@ -477,15 +530,7 @@ function HeroVideo({
   const videoUrl = settings?.hero_video_url || "/hero-video.mp4";
   const posterUrl = settings?.hero_video_poster_url || poster || fallbackImg;
   if (!videoUrl) {
-    return (
-      <img
-        src={posterUrl}
-        alt=""
-        aria-hidden
-        className={className}
-        loading="eager"
-      />
-    );
+    return <img src={posterUrl} alt="" aria-hidden className={className} loading="eager" />;
   }
   return (
     <video
@@ -502,7 +547,10 @@ function HeroVideo({
 
 function CinemaHero() {
   return (
-    <section id="hero" className="relative min-h-screen snap-start overflow-hidden bg-black text-white">
+    <section
+      id="hero"
+      className="relative min-h-screen snap-start overflow-hidden bg-black text-white"
+    >
       <HeroVideo
         fallbackImg={themeCinema}
         className="absolute inset-0 h-full w-full object-cover opacity-70"
@@ -520,15 +568,23 @@ function CinemaHero() {
             in motion.
           </h1>
           <p className="mt-6 max-w-xl text-base text-white/75 md:text-lg">
-            A cinematic look at how Virelix Consulting builds teams that move markets — shot across the USA and India.
+            A cinematic look at how Virelix Consulting builds teams that move markets — shot across
+            the USA and India.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Button asChild size="lg" className="rounded-none bg-white px-7 text-black hover:bg-white/90">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-none bg-white px-7 text-black hover:bg-white/90"
+            >
               <Link to="/contact">
                 Book a screening <ArrowUpRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
-            <Link to="/services" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/80 hover:text-white">
+            <Link
+              to="/services"
+              className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/80 hover:text-white"
+            >
               <PlayCircle className="h-5 w-5" /> Watch the trailer
             </Link>
           </div>
@@ -537,7 +593,9 @@ function CinemaHero() {
           {stats.map((s) => (
             <div key={s.label} className="px-2 py-4">
               <p className="font-display text-3xl font-bold md:text-4xl">{s.value}</p>
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/55">{s.label}</p>
+              <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/55">
+                {s.label}
+              </p>
             </div>
           ))}
         </div>
@@ -561,10 +619,13 @@ function PulseHero() {
           <h1 className="mt-6 font-display text-5xl font-bold leading-[1] tracking-tight md:text-7xl">
             Hire at the
             <br />
-            <span className="bg-gradient-accent bg-clip-text text-transparent">speed of growth.</span>
+            <span className="bg-gradient-accent bg-clip-text text-transparent">
+              speed of growth.
+            </span>
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Embedded RPO, executive search, and workforce design — wired into your operating cadence.
+            Embedded RPO, executive search, and workforce design — wired into your operating
+            cadence.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="rounded-full px-7">
@@ -582,7 +643,9 @@ function PulseHero() {
             {stats.map((s) => (
               <div key={s.label}>
                 <p className="font-display text-2xl font-bold md:text-3xl">{s.value}</p>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{s.label}</p>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {s.label}
+                </p>
               </div>
             ))}
           </div>
@@ -608,7 +671,10 @@ function PulseHero() {
    ================================================================= */
 function TerracottaHero() {
   return (
-    <section id="hero" className="relative snap-start overflow-hidden bg-background text-foreground">
+    <section
+      id="hero"
+      className="relative snap-start overflow-hidden bg-background text-foreground"
+    >
       <div className="absolute inset-0 bg-gradient-subtle" />
       <div className="absolute -right-20 top-20 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
       <div className="container relative mx-auto grid gap-12 px-4 py-20 md:grid-cols-12 md:items-center md:py-28">
@@ -624,7 +690,8 @@ function TerracottaHero() {
             <span className="font-serif italic text-accent">with care.</span>
           </h1>
           <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
-            We treat every search like a portrait — slow questions, warm conversations, lasting matches.
+            We treat every search like a portrait — slow questions, warm conversations, lasting
+            matches.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button asChild size="lg" className="rounded-full px-7">
@@ -632,7 +699,10 @@ function TerracottaHero() {
                 Start a conversation <ArrowRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
-            <Link to="/services" className="text-sm font-semibold uppercase tracking-wider underline-offset-4 hover:underline">
+            <Link
+              to="/services"
+              className="text-sm font-semibold uppercase tracking-wider underline-offset-4 hover:underline"
+            >
               Our craft →
             </Link>
           </div>
@@ -647,7 +717,9 @@ function TerracottaHero() {
         {stats.map((s) => (
           <div key={s.label} className="py-6">
             <p className="font-display text-3xl font-bold text-accent md:text-4xl">{s.value}</p>
-            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{s.label}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {s.label}
+            </p>
           </div>
         ))}
       </div>
@@ -661,7 +733,12 @@ function TerracottaHero() {
 function GlassHero() {
   return (
     <section id="hero" className="relative min-h-screen snap-start overflow-hidden bg-background">
-      <img src={themeGlass} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-90" />
+      <img
+        src={themeGlass}
+        alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover opacity-90"
+      />
       <div className="absolute -left-20 top-20 h-96 w-96 rounded-full bg-fuchsia-300/40 blur-3xl" />
       <div className="absolute -right-20 bottom-10 h-96 w-96 rounded-full bg-cyan-300/40 blur-3xl" />
       <div className="container relative mx-auto px-4 py-24 md:py-32">
@@ -674,7 +751,8 @@ function GlassHero() {
               Talent, clarified.
             </h1>
             <p className="mt-5 text-base text-foreground/75 md:text-lg">
-              A modern lens on executive search — calm interfaces, considered process, glass-clear communication.
+              A modern lens on executive search — calm interfaces, considered process, glass-clear
+              communication.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Button asChild size="lg" className="rounded-full px-7">
@@ -682,16 +760,26 @@ function GlassHero() {
                   Start a brief <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full border-white/60 bg-white/30 px-7 backdrop-blur hover:bg-white/50">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-full border-white/60 bg-white/30 px-7 backdrop-blur hover:bg-white/50"
+              >
                 <Link to="/services">Explore services</Link>
               </Button>
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.label} className="rounded-2xl border border-white/40 bg-white/30 p-5 backdrop-blur-xl">
+              <div
+                key={s.label}
+                className="rounded-2xl border border-white/40 bg-white/30 p-5 backdrop-blur-xl"
+              >
                 <p className="font-display text-2xl font-bold md:text-3xl">{s.value}</p>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-foreground/70">{s.label}</p>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-foreground/70">
+                  {s.label}
+                </p>
               </div>
             ))}
           </div>
@@ -706,7 +794,10 @@ function GlassHero() {
    ================================================================= */
 function BrutalistHero() {
   return (
-    <section id="hero" className="relative min-h-screen snap-start overflow-hidden bg-[#FFEB00] text-black">
+    <section
+      id="hero"
+      className="relative min-h-screen snap-start overflow-hidden bg-[#FFEB00] text-black"
+    >
       <div className="absolute inset-0 [background-image:linear-gradient(to_right,#000_2px,transparent_2px),linear-gradient(to_bottom,#000_2px,transparent_2px)] [background-size:80px_80px] opacity-[0.08]" />
       <div className="container relative mx-auto px-4 py-16 md:py-24">
         <div className="flex items-center gap-3 border-y-4 border-black py-3 text-xs font-black uppercase tracking-widest">
@@ -722,15 +813,25 @@ function BrutalistHero() {
         </h1>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <p className="border-l-4 border-black pl-4 text-lg font-semibold md:text-xl">
-            No fluff. No filler decks. We send résumés, you make hires. Repeat across two continents.
+            No fluff. No filler decks. We send résumés, you make hires. Repeat across two
+            continents.
           </p>
           <div className="flex flex-wrap items-start gap-3">
-            <Button asChild size="lg" className="rounded-none border-4 border-black bg-black px-7 text-[#FFEB00] shadow-[6px_6px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000]">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-none border-4 border-black bg-black px-7 text-[#FFEB00] shadow-[6px_6px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000]"
+            >
               <Link to="/contact">
                 BRIEF US <ArrowUpRight className="ml-1 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-none border-4 border-black bg-white px-7 text-black shadow-[6px_6px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-white hover:shadow-[2px_2px_0_0_#000]">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-none border-4 border-black bg-white px-7 text-black shadow-[6px_6px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-white hover:shadow-[2px_2px_0_0_#000]"
+            >
               <Link to="/services">SERVICES →</Link>
             </Button>
           </div>

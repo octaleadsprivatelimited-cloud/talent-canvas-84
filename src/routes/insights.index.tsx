@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { PageHero } from "@/components/page-hero";
 import { DynamicSeo } from "@/components/dynamic-seo";
 
@@ -21,7 +21,7 @@ function InsightsIndex() {
   const { data } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("posts")
         .select("*")
         .eq("published", true)

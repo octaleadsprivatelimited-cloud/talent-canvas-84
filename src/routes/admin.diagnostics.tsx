@@ -3,7 +3,7 @@ import { Shield, ShieldAlert, UserCheck, KeyRound, Fingerprint, Database } from 
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useState } from "react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -18,10 +18,10 @@ function DiagnosticsPage() {
     setSeeding(true);
     try {
       // 1. Seed site_settings
-      await supabase.from("site_settings").upsert({
+      await firebase.from("site_settings").upsert({
         id: "global",
         company_name: "Virelix Consulting",
-        contact_email: "info@virelix.com",
+        contact_email: "info@virelixconsulting.com",
         theme: "mono",
       });
 
@@ -75,7 +75,7 @@ function DiagnosticsPage() {
         cta_secondary_to: "/services",
       };
 
-      await supabase.from("page_content").upsert(
+      await firebase.from("page_content").upsert(
         {
           page_key: "home",
           title: "Homepage Layout",
@@ -99,7 +99,7 @@ function DiagnosticsPage() {
         operating_in: ["United States", "India"],
       };
 
-      await supabase.from("page_content").upsert(
+      await firebase.from("page_content").upsert(
         {
           page_key: "about",
           title: "About Page Layout",
@@ -114,7 +114,7 @@ function DiagnosticsPage() {
           "Get in touch with a specialist consultant. We respond to all hiring inquiries within one business day.",
       };
 
-      await supabase.from("page_content").upsert(
+      await firebase.from("page_content").upsert(
         {
           page_key: "contact",
           title: "Contact Page Layout",
@@ -212,7 +212,7 @@ Consulting practices we offer:
       ];
 
       for (const svc of services) {
-        await supabase.from("services").upsert(svc);
+        await firebase.from("services").upsert(svc);
       }
 
       // 4. Seed companies
@@ -222,7 +222,7 @@ Consulting practices we offer:
           name: "Virelix Tech Corp",
           slug: "vix-tech",
           description: "Leading technology infrastructure and digital platform development agency.",
-          website: "https://virelix.com",
+          website: "https://virelixconsulting.com",
         },
         {
           id: "company-2",
@@ -234,7 +234,7 @@ Consulting practices we offer:
       ];
 
       for (const comp of companies) {
-        await supabase.from("companies").upsert(comp);
+        await firebase.from("companies").upsert(comp);
       }
 
       // 5. Seed jobs
@@ -266,7 +266,7 @@ Consulting practices we offer:
       ];
 
       for (const j of jobs) {
-        await supabase.from("jobs").upsert(j);
+        await firebase.from("jobs").upsert(j);
       }
 
       // 6. Seed testimonials
@@ -290,7 +290,7 @@ Consulting practices we offer:
       ];
 
       for (const t of testimonials) {
-        await supabase.from("testimonials").upsert(t);
+        await firebase.from("testimonials").upsert(t);
       }
 
       // 7. Seed industries
@@ -404,7 +404,7 @@ Consulting practices we offer:
       ];
 
       for (const ind of industries) {
-        await supabase.from("industries").upsert(ind);
+        await firebase.from("industries").upsert(ind);
       }
 
       // 8. Seed team_members
@@ -418,7 +418,7 @@ Consulting practices we offer:
             "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&h=500&q=80",
           published: true,
           sort_order: 1,
-          email: "alex@virelix.com",
+          email: "alex@virelixconsulting.com",
           linkedin: "https://linkedin.com/in/alex-mercer",
         },
         {
@@ -430,13 +430,13 @@ Consulting practices we offer:
             "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=500&q=80",
           published: true,
           sort_order: 2,
-          email: "jessica@virelix.com",
+          email: "jessica@virelixconsulting.com",
           linkedin: "https://linkedin.com/in/jessica-taylor",
         },
       ];
 
       for (const tm of team) {
-        await supabase.from("team_members").upsert(tm);
+        await firebase.from("team_members").upsert(tm);
       }
 
       // 9. Seed case_studies
@@ -522,7 +522,7 @@ All 6 engineering seats were filled within 75 days, with 4 US-based hires and 2 
       ];
 
       for (const cs of caseStudies) {
-        await supabase.from("case_studies").upsert(cs);
+        await firebase.from("case_studies").upsert(cs);
       }
 
       // 10. Seed posts
@@ -594,7 +594,7 @@ This model reduces search cycle times by 30-40%. Additionally, it allows our cli
       ];
 
       for (const p of posts) {
-        await supabase.from("posts").upsert(p);
+        await firebase.from("posts").upsert(p);
       }
 
       toast.success("Successfully seeded database with all demo content!");

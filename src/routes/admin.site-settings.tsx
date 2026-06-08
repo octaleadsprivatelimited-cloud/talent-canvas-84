@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { supabaseAny } from "@/lib/supabase-any";
+import { firebaseAny } from "@/lib/firebase-any";
 import { uploadImage } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,7 @@ function SiteSettingsAdmin() {
   const [previewTheme, setPreviewTheme] = useState<ThemeKey>("editorial");
 
   useEffect(() => {
-    supabaseAny
+    firebaseAny
       .from("site_settings")
       .select("*")
       .limit(1)
@@ -58,12 +58,12 @@ function SiteSettingsAdmin() {
   // Apply live preview; restore saved theme when leaving the page
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("lovable:preview-theme", { detail: { theme: previewTheme } }),
+      new CustomEvent("site:preview-theme", { detail: { theme: previewTheme } }),
     );
   }, [previewTheme]);
   useEffect(() => {
     return () => {
-      window.dispatchEvent(new CustomEvent("lovable:preview-theme", { detail: { theme: null } }));
+      window.dispatchEvent(new CustomEvent("site:preview-theme", { detail: { theme: null } }));
     };
   }, []);
 
@@ -73,8 +73,8 @@ function SiteSettingsAdmin() {
     delete payload.created_at;
     delete payload.updated_at;
     const { data, error } = id
-      ? await supabaseAny.from("site_settings").update(payload).eq("id", id).select().maybeSingle()
-      : await supabaseAny.from("site_settings").insert(payload).select().maybeSingle();
+      ? await firebaseAny.from("site_settings").update(payload).eq("id", id).select().maybeSingle()
+      : await firebaseAny.from("site_settings").insert(payload).select().maybeSingle();
     if (error) {
       toast.error(error.message);
       return false;
@@ -369,11 +369,7 @@ function MediaUploader({
               className="aspect-video w-full bg-black object-cover"
             />
           ) : (
-            <img
-              src={url}
-              alt={`${label} preview`}
-              className="aspect-video w-full object-cover"
-            />
+            <img src={url} alt={`${label} preview`} className="aspect-video w-full object-cover" />
           )}
         </div>
       ) : (
@@ -413,13 +409,7 @@ function MediaUploader({
           )}
         </Button>
         {url && (
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            disabled={busy}
-            onClick={handleClear}
-          >
+          <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={handleClear}>
             <X className="mr-1.5 h-3.5 w-3.5" /> Remove
           </Button>
         )}

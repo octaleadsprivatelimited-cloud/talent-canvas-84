@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Inbox, Mail, Phone, Building2, Clock, Trash2, Search } from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -73,7 +73,7 @@ function SubmissionsAdmin() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data, error } = await firebase
       .from("contact_submissions")
       .select("*")
       .order("created_at", { ascending: false });
@@ -89,7 +89,7 @@ function SubmissionsAdmin() {
   const setStatus = async (id: string, status: SubStatus) => {
     const prev = rows;
     setRows((r) => r.map((x) => (x.id === id ? { ...x, status } : x)));
-    const { error } = await supabase.from("contact_submissions").update({ status }).eq("id", id);
+    const { error } = await firebase.from("contact_submissions").update({ status }).eq("id", id);
     if (error) {
       toast.error(error.message);
       setRows(prev);
@@ -100,7 +100,7 @@ function SubmissionsAdmin() {
 
   const remove = async (id: string) => {
     if (!confirm("Delete this submission?")) return;
-    const { error } = await supabase.from("contact_submissions").delete().eq("id", id);
+    const { error } = await firebase.from("contact_submissions").delete().eq("id", id);
     if (error) {
       toast.error(error.message);
       return;

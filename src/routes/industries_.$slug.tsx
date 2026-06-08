@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Check, Sparkles, Briefcase, TrendingUp } from "lucide-react";
 import * as Icons from "lucide-react";
-import { supabase } from "@/integrations/firebase/client";
+import { firebase } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 
 const INDUSTRY_PHOTOS: Record<string, string> = {
@@ -62,7 +62,7 @@ const industryQuery = (slug: string) =>
   queryOptions({
     queryKey: ["industry", slug],
     queryFn: async (): Promise<Industry | null> => {
-      const { data } = await supabase
+      const { data } = await firebase
         .from("industries")
         .select("*")
         .eq("slug", slug)
@@ -77,8 +77,8 @@ const relatedDataQuery = () =>
     queryKey: ["industry_related_data"],
     queryFn: async () => {
       const [caseStudiesRes, jobsRes] = await Promise.all([
-        supabase.from("case_studies").select("*").eq("published", true),
-        supabase.from("jobs").select("*, companies(*)").eq("published", true),
+        firebase.from("case_studies").select("*").eq("published", true),
+        firebase.from("jobs").select("*, companies(*)").eq("published", true),
       ]);
       return {
         caseStudies: (caseStudiesRes.data as CaseStudy[]) ?? [],
@@ -523,9 +523,7 @@ function IndustryDetailComponent() {
                 Engage Practice
               </span>
             </div>
-            <h3 className="text-2xl font-semibold text-foreground">
-              Talk with a specialist
-            </h3>
+            <h3 className="text-2xl font-semibold text-foreground">Talk with a specialist</h3>
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
               Speak directly with a lead partner who coordinates client engagements and candidate
               vetting in the {industry.label} field.
